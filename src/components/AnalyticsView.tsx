@@ -234,7 +234,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
         <div className="p-4 rounded-xl bg-[#070c12] border border-[#142330] space-y-3.5">
           <div className="flex items-center justify-between pb-2 border-b border-[#142330]/60">
             <span className="text-xs font-bold text-white uppercase tracking-wider">
-              COMPANIES BY CTC RANGE (5-10, 10-15, 15-20, 20-25, 25+)
+              COMPANIES BY CTC RANGE
             </span>
             <span className="text-[11px] text-[#546b80]">
               TOTAL: {drives.length} DRIVES
@@ -302,7 +302,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
         <div className="p-4 rounded-xl bg-[#070c12] border border-[#142330] space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-[#142330]/60">
             <span className="text-xs font-bold text-white uppercase tracking-wider">
-              CTC RANGE DISTRIBUTION (5-10, 10-15, 15-20, 20-25, 25+)
+              COMPANIES BY CTC RANGE
             </span>
             <span className="text-[11px] text-[#546b80]">
               TOTAL: {drives.length} COMPANIES

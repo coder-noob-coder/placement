@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Home, FileSpreadsheet, History, Calendar, BarChart2 } from 'lucide-react';
+import { Home, FileSpreadsheet, StickyNote, Calendar, BarChart2 } from 'lucide-react';
 
 export type NavTab =
   | 'dashboard'
@@ -24,7 +24,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
 }) => {
   const isHome = activeTab === 'dashboard';
   const isPipeline = activeTab === 'pipeline';
-  const isPast = activeTab === 'past';
+  const isNotes = activeTab === 'notes';
   const isCalendar = activeTab === 'calendar';
   const isStats = activeTab === 'analytics';
 
@@ -68,22 +68,22 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         )}
       </button>
 
-      {/* 3. PAST COMPANIES */}
+      {/* 3. NOTES */}
       <button
-        onClick={() => onTabChange('past')}
+        onClick={() => onTabChange('notes')}
         className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
       >
-        <History
-          className={`w-5 h-5 ${isPast ? 'text-[#00ff66]' : 'text-slate-500'}`}
+        <StickyNote
+          className={`w-5 h-5 ${isNotes ? 'text-[#00ff66]' : 'text-slate-500'}`}
         />
         <span
           className={`text-[10px] tracking-wider font-semibold uppercase ${
-            isPast ? 'text-[#00ff66]' : 'text-slate-500'
+            isNotes ? 'text-[#00ff66]' : 'text-slate-500'
           }`}
         >
-          PAST
+          NOTES
         </span>
-        {isPast && (
+        {isNotes && (
           <span className="w-1 h-1 rounded-full bg-[#00ff66] shadow-[0_0_6px_#00ff66] mt-0.5" />
         )}
       </button>
