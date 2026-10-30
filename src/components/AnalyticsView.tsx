@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { PlacementDrive } from '@/lib/db';
-import { BarChart3, PieChart as PieChartIcon, TrendingUp, Award, DollarSign, Building2 } from 'lucide-react';
+import { BarChart3, PieChart as PieChartIcon, TrendingUp } from 'lucide-react';
 
 interface AnalyticsViewProps {
   drives: PlacementDrive[];
@@ -21,24 +21,75 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
   const [chartType, setChartType] = useState<'bar' | 'pie'>('bar');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // 1. Threshold Data (5+, 10+, 15+, 20+, 25+)
-  const thresholdData = useMemo(() => {
+  // 1. Range Brackets (5-10, 10-15, 15-20, 20-25, 25+)
+  const rangeData = useMemo(() => {
     const ctcs = drives.map((p) => ({ company: p.company, val: parseCtcMax(p.ctc) }));
     const total = drives.length || 1;
 
-    const t5 = ctcs.filter((x) => x.val >= 5).length;
-    const t10 = ctcs.filter((x) => x.val >= 10).length;
-    const t15 = ctcs.filter((x) => x.val >= 15).length;
-    const t20 = ctcs.filter((x) => x.val >= 20).length;
-    const t25 = ctcs.filter((x) => x.val >= 25).length;
+    const b5_10 = ctcs.filter((x) => x.val >= 5 && x.val < 10).length;
+    const b10_15 = ctcs.filter((x) => x.val >= 10 && x.val < 15).length;
+    const b15_20 = ctcs.filter((x) => x.val >= 15 && x.val < 20).length;
+    const b20_25 = ctcs.filter((x) => x.val >= 20 && x.val < 25).length;
+    const b25Plus = ctcs.filter((x) => x.val >= 25).length;
+    const under5 = ctcs.filter((x) => x.val > 0 && x.val < 5).length;
+    const notSpec = ctcs.filter((x) => x.val === 0).length;
 
-    return [
-      { label: '5+ LPA', min: 5, count: t5, percent: Math.round((t5 / total) * 100), color: '#00ff66' },
-      { label: '10+ LPA', min: 10, count: t10, percent: Math.round((t10 / total) * 100), color: '#38bdf8' },
-      { label: '15+ LPA', min: 15, count: t15, percent: Math.round((t15 / total) * 100), color: '#818cf8' },
-      { label: '20+ LPA', min: 20, count: t20, percent: Math.round((t20 / total) * 100), color: '#fbbf24' },
-      { label: '25+ LPA', min: 25, count: t25, percent: Math.round((t25 / total) * 100), color: '#ef4444' },
+    const maxCount = Math.max(b5_10, b10_15, b15_20, b20_25, b25Plus, 1);
+
+    const primaryRanges = [
+      {
+        label: '5 - 10 LPA',
+        min: 5,
+        max: 10,
+        count: b5_10,
+        percent: Math.round((b5_10 / total) * 100),
+        barWidth: Math.round((b5_10 / maxCount) * 100),
+        color: '#00ff66',
+      },
+      {
+        label: '10 - 15 LPA',
+        min: 10,
+        max: 15,
+        count: b10_15,
+        percent: Math.round((b10_15 / total) * 100),
+        barWidth: Math.round((b10_15 / maxCount) * 100),
+        color: '#38bdf8',
+      },
+      {
+        label: '15 - 20 LPA',
+        min: 15,
+        max: 20,
+        count: b15_20,
+        percent: Math.round((b15_20 / total) * 100),
+        barWidth: Math.round((b15_20 / maxCount) * 100),
+        color: '#818cf8',
+      },
+      {
+        label: '20 - 25 LPA',
+        min: 20,
+        max: 25,
+        count: b20_25,
+        percent: Math.round((b20_25 / total) * 100),
+        barWidth: Math.round((b20_25 / maxCount) * 100),
+        color: '#fbbf24',
+      },
+      {
+        label: '25+ LPA',
+        min: 25,
+        max: 999,
+        count: b25Plus,
+        percent: Math.round((b25Plus / total) * 100),
+        barWidth: Math.round((b25Plus / maxCount) * 100),
+        color: '#ef4444',
+      },
     ];
+
+    const otherRanges = [
+      { label: '< 5 LPA', count: under5, percent: Math.round((under5 / total) * 100), color: '#64748b' },
+      { label: 'STIPEND / TBA', count: notSpec, percent: Math.round((notSpec / total) * 100), color: '#334155' },
+    ];
+
+    return { primaryRanges, otherRanges, total10Plus: b10_15 + b15_20 + b20_25 + b25Plus };
   }, [drives]);
 
   // 2. Bracket Slices for Pie Chart
@@ -46,21 +97,21 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
     const ctcs = drives.map((p) => parseCtcMax(p.ctc));
     const total = drives.length || 1;
 
-    const under5 = ctcs.filter((v) => v > 0 && v < 5).length;
     const b5_10 = ctcs.filter((v) => v >= 5 && v < 10).length;
     const b10_15 = ctcs.filter((v) => v >= 10 && v < 15).length;
     const b15_20 = ctcs.filter((v) => v >= 15 && v < 20).length;
     const b20_25 = ctcs.filter((v) => v >= 20 && v < 25).length;
     const b25Plus = ctcs.filter((v) => v >= 25).length;
+    const under5 = ctcs.filter((v) => v > 0 && v < 5).length;
     const notSpec = ctcs.filter((v) => v === 0).length;
 
     return [
-      { label: '< 5 LPA', count: under5, color: '#64748b' },
       { label: '5 - 10 LPA', count: b5_10, color: '#00ff66' },
       { label: '10 - 15 LPA', count: b10_15, color: '#38bdf8' },
       { label: '15 - 20 LPA', count: b15_20, color: '#818cf8' },
       { label: '20 - 25 LPA', count: b20_25, color: '#fbbf24' },
       { label: '25+ LPA', count: b25Plus, color: '#ef4444' },
+      { label: '< 5 LPA', count: under5, color: '#64748b' },
       { label: 'Stipend / TBA', count: notSpec, color: '#334155' },
     ].map((item) => ({
       ...item,
@@ -82,7 +133,6 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
       total: drives.length,
       maxCtc: `${maxCtc} LPA`,
       avgCtc: `${avgCtc} LPA`,
-      withInterviewOrOa: drives.filter((d) => d.interviewDate || d.oaDate).length,
     };
   }, [drives]);
 
@@ -172,7 +222,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
             &gt;= 10 LPA DRIVES
           </span>
           <span className="text-xl sm:text-2xl font-extrabold text-indigo-400 block mt-0.5">
-            {thresholdData.find((t) => t.min === 10)?.count || 0}
+            {rangeData.total10Plus}
           </span>
           <span className="text-[10px] text-[#546b80] block mt-0.5">Tier 1 &amp; Super Dream</span>
         </div>
@@ -180,11 +230,11 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
 
       {/* Main Chart Section: BAR CHART vs PIE CHART */}
       {chartType === 'bar' ? (
-        /* 1. CTC THRESHOLD BAR CHART */
+        /* 1. CTC RANGE BAR CHART (5-10, 10-15, 15-20, 20-25, 25+) */
         <div className="p-4 rounded-xl bg-[#070c12] border border-[#142330] space-y-3.5">
           <div className="flex items-center justify-between pb-2 border-b border-[#142330]/60">
             <span className="text-xs font-bold text-white uppercase tracking-wider">
-              COMPANIES BY CTC THRESHOLD (5+, 10+, 15+, 20+, 25+)
+              COMPANIES BY CTC RANGE (5-10, 10-15, 15-20, 20-25, 25+)
             </span>
             <span className="text-[11px] text-[#546b80]">
               TOTAL: {drives.length} DRIVES
@@ -192,12 +242,12 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
           </div>
 
           <div className="space-y-3 pt-1">
-            {thresholdData.map((item) => (
+            {rangeData.primaryRanges.map((item) => (
               <div
                 key={item.label}
                 onClick={() => onSelectCtcFilter?.(item.min)}
                 className="group cursor-pointer hover:bg-[#0b141d] p-1.5 rounded transition-colors"
-                title={`Click to filter companies >= ${item.min} LPA`}
+                title={`Click to view companies with ${item.label}`}
               >
                 <div className="flex items-center justify-between text-xs mb-1.5 font-medium">
                   <div className="flex items-center gap-2">
@@ -212,7 +262,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
 
                   <div className="flex items-center gap-2 text-xs">
                     <span className="text-white font-extrabold">{item.count}</span>
-                    <span className="text-[#546b80]">({item.percent}%)</span>
+                    <span className="text-[#748ba0]">({item.percent}%)</span>
                     <span className="text-[10px] text-[#546b80] group-hover:text-white">&gt;</span>
                   </div>
                 </div>
@@ -222,7 +272,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
                   <div
                     className="h-full rounded-xs transition-all duration-500 ease-out"
                     style={{
-                      width: `${item.percent}%`,
+                      width: `${item.barWidth}%`,
                       backgroundColor: item.color,
                       boxShadow: `0 0 10px ${item.color}33`,
                     }}
@@ -232,9 +282,19 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
             ))}
           </div>
 
-          <div className="pt-2 text-[11px] text-[#546b80] flex items-center justify-between border-t border-[#142330]/60">
-            <span>Tip: Click on any threshold bar to view matching companies</span>
-            <span className="text-[#00ff66] font-semibold">5+ &bull; 10+ &bull; 15+ &bull; 20+ &bull; 25+</span>
+          {/* Secondary Range Summary Strip (< 5 LPA & STIPEND / TBA) */}
+          <div className="pt-2.5 flex items-center justify-between text-xs text-[#546b80] border-t border-[#142330]/60 flex-wrap gap-2">
+            <div className="flex items-center gap-4 flex-wrap">
+              {rangeData.otherRanges.map((other) => (
+                <div key={other.label} className="flex items-center gap-1.5 text-[11px]">
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: other.color }} />
+                  <span className="text-slate-400">{other.label}:</span>
+                  <span className="text-white font-semibold">{other.count}</span>
+                  <span className="text-[#546b80]">({other.percent}%)</span>
+                </div>
+              ))}
+            </div>
+            <span className="text-[10px] text-[#546b80]">Click any bar to filter</span>
           </div>
         </div>
       ) : (
@@ -242,7 +302,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
         <div className="p-4 rounded-xl bg-[#070c12] border border-[#142330] space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-[#142330]/60">
             <span className="text-xs font-bold text-white uppercase tracking-wider">
-              CTC RANGE DISTRIBUTION (PIE / DONUT BREAKDOWN)
+              CTC RANGE DISTRIBUTION (5-10, 10-15, 15-20, 20-25, 25+)
             </span>
             <span className="text-[11px] text-[#546b80]">
               TOTAL: {drives.length} COMPANIES
@@ -345,4 +405,3 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
     </div>
   );
 };
-
