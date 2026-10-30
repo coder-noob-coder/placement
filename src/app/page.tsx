@@ -19,7 +19,7 @@ import { CompanyCard } from '@/components/CompanyCard';
 import { CompanyTable } from '@/components/CompanyTable';
 import { CompanyDetailModal } from '@/components/CompanyDetailModal';
 import { MobileBottomNav, NavTab } from '@/components/MobileBottomNav';
-import { Inbox, Sparkles, Calendar, History } from 'lucide-react';
+import { Inbox, Sparkles, Calendar, History, Info } from 'lucide-react';
 
 function isTodayDate(str?: string): boolean {
   if (!str) return false;
@@ -408,6 +408,17 @@ export default function PlacementTrackerPage() {
                 closingToday={metrics.todayDeadlines}
                 onSelectMetric={handleSelectMetric}
               />
+
+              {/* Minimal Terminal Notice Banner */}
+              <div className="bg-[#0a1219] border border-[#142330] hover:border-[#1d354a] rounded-lg px-3 py-2 flex items-center gap-2 text-xs font-mono transition-colors select-none">
+                <Info className="w-3.5 h-3.5 text-[#fbbf24] shrink-0" />
+                <span className="text-[#fbbf24] font-bold text-[10px] tracking-wider uppercase shrink-0">
+                  [ NOTE ]
+                </span>
+                <span className="text-slate-300 text-xs tracking-wide">
+                  Data before mid-Sept is not complete.
+                </span>
+              </div>
 
               {/* Daily Action Agenda */}
               <UpcomingActivities
