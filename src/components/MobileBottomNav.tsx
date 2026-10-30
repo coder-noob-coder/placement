@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Home, FileSpreadsheet, StickyNote, Calendar, BarChart2 } from 'lucide-react';
+import { Home, History, StickyNote, Calendar, BarChart2 } from 'lucide-react';
 
 export type NavTab =
   | 'dashboard'
@@ -23,14 +23,14 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   onTabChange,
 }) => {
   const isHome = activeTab === 'dashboard';
-  const isPipeline = activeTab === 'pipeline';
+  const isPast = activeTab === 'past';
   const isNotes = activeTab === 'notes';
   const isCalendar = activeTab === 'calendar';
   const isStats = activeTab === 'analytics';
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#070c12]/95 backdrop-blur-md border-t border-[#162531] px-3 py-2 flex items-center justify-around font-mono">
-      {/* 1. HOME */}
+      {/* 1. HOME (Dashboard & Pipeline) */}
       <button
         onClick={() => onTabChange('dashboard')}
         className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
@@ -48,27 +48,27 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         )}
       </button>
 
-      {/* 2. PIPELINE */}
+      {/* 2. PAST DRIVES (Replaced Pipeline with Past) */}
       <button
-        onClick={() => onTabChange('pipeline')}
+        onClick={() => onTabChange('past')}
         className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
       >
-        <FileSpreadsheet
-          className={`w-5 h-5 ${isPipeline ? 'text-[#00ff66]' : 'text-slate-500'}`}
+        <History
+          className={`w-5 h-5 ${isPast ? 'text-[#00ff66]' : 'text-slate-500'}`}
         />
         <span
           className={`text-[10px] tracking-wider font-semibold uppercase ${
-            isPipeline ? 'text-[#00ff66]' : 'text-slate-500'
+            isPast ? 'text-[#00ff66]' : 'text-slate-500'
           }`}
         >
-          PIPELINE
+          PAST
         </span>
-        {isPipeline && (
+        {isPast && (
           <span className="w-1 h-1 rounded-full bg-[#00ff66] shadow-[0_0_6px_#00ff66] mt-0.5" />
         )}
       </button>
 
-      {/* 3. NOTES */}
+      {/* 3. SHARED NOTES */}
       <button
         onClick={() => onTabChange('notes')}
         className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"

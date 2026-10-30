@@ -10,28 +10,41 @@ interface NoteItem {
   timestampFormatted: string;
 }
 
-const dataDir = path.resolve(process.cwd(), 'data');
+// In Vercel serverless environment, filesystem is read-only except /tmp
+const isVercel = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const dataDir = isVercel ? '/tmp' : path.resolve(process.cwd(), 'data');
 const notesFilePath = path.join(dataDir, 'notes.json');
+
+// Global memory cache to retain notes across serverless invocations
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const globalAny = globalThis as any;
+if (!globalAny.__placement_notes) {
+  globalAny.__placement_notes = [];
+}
 
 function readNotes(): NoteItem[] {
   try {
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
     }
-    if (!fs.existsSync(notesFilePath)) {
-      fs.writeFileSync(notesFilePath, JSON.stringify([], null, 2), 'utf-8');
-      return [];
+    if (fs.existsSync(notesFilePath)) {
+      const content = fs.readFileSync(notesFilePath, 'utf-8');
+      const parsed = JSON.parse(content);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        globalAny.__placement_notes = parsed;
+        return parsed;
+      }
     }
-    const content = fs.readFileSync(notesFilePath, 'utf-8');
-    const parsed = JSON.parse(content);
-    return Array.isArray(parsed) ? parsed : [];
   } catch (err) {
-    console.error('Error reading notes.json:', err);
-    return [];
+    console.error('Error reading notes file:', err);
   }
+
+  // Fallback to in-memory store
+  return Array.isArray(globalAny.__placement_notes) ? globalAny.__placement_notes : [];
 }
 
 function writeNotes(notes: NoteItem[]): boolean {
+  globalAny.__placement_notes = notes;
   try {
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
@@ -39,18 +52,21 @@ function writeNotes(notes: NoteItem[]): boolean {
     fs.writeFileSync(notesFilePath, JSON.stringify(notes, null, 2), 'utf-8');
     return true;
   } catch (err) {
-    console.error('Error writing notes.json:', err);
+    console.error('Error writing notes file:', err);
     return false;
   }
 }
 
 export async function GET() {
   const notes = readNotes();
-  return NextResponse.json({ success: true, notes }, {
-    headers: {
-      'Cache-Control': 'no-store, no-cache, must-revalidate',
-    },
-  });
+  return NextResponse.json(
+    { success: true, notes },
+    {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+      },
+    }
+  );
 }
 
 export async function POST(req: Request) {
@@ -78,7 +94,7 @@ export async function POST(req: Request) {
     });
 
     const newNote: NoteItem = {
-      id: `note_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      id: body.id || `note_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       text,
       author,
       createdAt: now.toISOString(),
@@ -86,7 +102,8 @@ export async function POST(req: Request) {
     };
 
     const currentNotes = readNotes();
-    const updatedNotes = [newNote, ...currentNotes];
+    // Prevent duplicate ids
+    const updatedNotes = [newNote, ...currentNotes.filter((n) => n.id !== newNote.id)];
     writeNotes(updatedNotes);
 
     return NextResponse.json({ success: true, note: newNote, notes: updatedNotes });
@@ -123,4 +140,3 @@ export async function DELETE(req: Request) {
     );
   }
 }
-
