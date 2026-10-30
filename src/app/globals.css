@@ -1,0 +1,98 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-muted: #f1f5f9;
+  --surface-hover: #f8fafc;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text-muted: #64748b;
+  --header-bg: #ffffff;
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --neon-green: #00ff66;
+  --neon-cyan: #38bdf8;
+  --neon-amber: #f59e0b;
+  --neon-red: #ef4444;
+}
+
+.dark {
+  --background: #060b10;
+  --foreground: #e2e8f0;
+  --surface: #0b131b;
+  --surface-raised: #0e1722;
+  --surface-muted: #080f15;
+  --surface-hover: #111d28;
+  --border: #162531;
+  --border-strong: #1e3547;
+  --text-muted: #74879b;
+  --header-bg: #070c12;
+  --scrollbar-track: #060b10;
+  --scrollbar-thumb: #162531;
+  --neon-green: #00ff66;
+  --neon-cyan: #38bdf8;
+  --neon-amber: #f59e0b;
+  --neon-red: #ef4444;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  min-height: 100vh;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Crisp cyber terminal panels and cards */
+.panel {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--border-strong);
+}
+
+.well {
+  background-color: var(--surface-muted);
+  border: 1px solid var(--border);
+}
+
+/* Blinking terminal cursor */
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-cursor {
+  animation: cursorBlink 1s step-end infinite;
+}
+
+/* Crisp terminal scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
