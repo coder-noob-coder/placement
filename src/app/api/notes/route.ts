@@ -10,6 +10,18 @@ interface NoteItem {
   timestampFormatted: string;
 }
 
+const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+function filterExpiredNotes(notes: NoteItem[]): NoteItem[] {
+  const now = Date.now();
+  return notes.filter((n) => {
+    if (!n || !n.createdAt) return false;
+    const time = new Date(n.createdAt).getTime();
+    if (isNaN(time)) return false;
+    return now - time < TWENTY_FOUR_HOURS_MS;
+  });
+}
+
 // In Vercel serverless environment, filesystem is read-only except /tmp
 const isVercel = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 const dataDir = isVercel ? '/tmp' : path.resolve(process.cwd(), 'data');
@@ -23,6 +35,7 @@ if (!globalAny.__placement_notes) {
 }
 
 function readNotes(): NoteItem[] {
+  let list: NoteItem[] = [];
   try {
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
@@ -31,25 +44,36 @@ function readNotes(): NoteItem[] {
       const content = fs.readFileSync(notesFilePath, 'utf-8');
       const parsed = JSON.parse(content);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        globalAny.__placement_notes = parsed;
-        return parsed;
+        list = parsed;
       }
     }
   } catch (err) {
     console.error('Error reading notes file:', err);
   }
 
-  // Fallback to in-memory store
-  return Array.isArray(globalAny.__placement_notes) ? globalAny.__placement_notes : [];
+  if (list.length === 0 && Array.isArray(globalAny.__placement_notes)) {
+    list = globalAny.__placement_notes;
+  }
+
+  // Filter out any notes older than 24 hours
+  const active = filterExpiredNotes(list);
+  if (active.length !== list.length) {
+    writeNotes(active);
+  } else {
+    globalAny.__placement_notes = active;
+  }
+
+  return active;
 }
 
 function writeNotes(notes: NoteItem[]): boolean {
-  globalAny.__placement_notes = notes;
+  const active = filterExpiredNotes(notes);
+  globalAny.__placement_notes = active;
   try {
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
     }
-    fs.writeFileSync(notesFilePath, JSON.stringify(notes, null, 2), 'utf-8');
+    fs.writeFileSync(notesFilePath, JSON.stringify(active, null, 2), 'utf-8');
     return true;
   } catch (err) {
     console.error('Error writing notes file:', err);
@@ -99,12 +123,12 @@ export async function POST(req: Request) {
       id: body.id || `note_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       text,
       author,
-      createdAt: now.toISOString(),
+      createdAt: body.createdAt || now.toISOString(),
       timestampFormatted,
     };
 
     const currentNotes = readNotes();
-    // Prevent duplicate ids
+    // Filter expired and prepend new note
     const updatedNotes = [newNote, ...currentNotes.filter((n) => n.id !== newNote.id)];
     writeNotes(updatedNotes);
 

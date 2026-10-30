@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Send, Trash2, RefreshCw, MessageSquare } from 'lucide-react';
+import { Send, RefreshCw, MessageSquare, Clock } from 'lucide-react';
 
 interface NoteItem {
   id: string;
@@ -12,6 +12,30 @@ interface NoteItem {
 }
 
 const STORAGE_KEY = 'placement_terminal_notes_v1';
+const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+function filterExpiredNotes(notes: NoteItem[]): NoteItem[] {
+  const now = Date.now();
+  return notes.filter((n) => {
+    if (!n || !n.createdAt) return false;
+    const time = new Date(n.createdAt).getTime();
+    if (isNaN(time)) return false;
+    return now - time < TWENTY_FOUR_HOURS_MS;
+  });
+}
+
+function getTimeRemaining(createdAt?: string): string {
+  if (!createdAt) return '24H LEFT';
+  const created = new Date(createdAt).getTime();
+  if (isNaN(created)) return '24H LEFT';
+  const elapsed = Date.now() - created;
+  const remainingMs = TWENTY_FOUR_HOURS_MS - elapsed;
+  if (remainingMs <= 0) return 'EXPIRING';
+  const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+  const mins = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+  if (hours > 0) return `${hours}H LEFT`;
+  return `${mins}M LEFT`;
+}
 
 function formatNoteTimestamp(createdAt?: string, fallback?: string): string {
   if (!createdAt) return fallback || '';
@@ -36,7 +60,12 @@ function getLocalNotes(): NoteItem[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    const active = filterExpiredNotes(parsed);
+    if (active.length !== parsed.length) {
+      saveLocalNotes(active);
+    }
+    return active;
   } catch {
     return [];
   }
@@ -45,7 +74,8 @@ function getLocalNotes(): NoteItem[] {
 function saveLocalNotes(notes: NoteItem[]) {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    const active = filterExpiredNotes(notes);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(active));
   } catch (err) {
     console.error('Failed to save to localStorage:', err);
   }
@@ -95,8 +125,9 @@ export const NotesSection: React.FC = () => {
             (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
 
-          saveLocalNotes(merged);
-          return merged;
+          const active = filterExpiredNotes(merged);
+          saveLocalNotes(active);
+          return active;
         });
       }
     } catch (err) {
@@ -110,7 +141,7 @@ export const NotesSection: React.FC = () => {
     fetchNotes();
   }, [fetchNotes]);
 
-  // Polling every 5 seconds for shared live updates
+  // Polling every 5 seconds for shared live updates & periodic cleanup
   useEffect(() => {
     const timer = setInterval(() => {
       fetchNotes(true);
@@ -139,7 +170,7 @@ export const NotesSection: React.FC = () => {
 
     // Immediately update UI and localStorage so it NEVER disappears on refresh
     setNotes((prev) => {
-      const updated = [newNote, ...prev];
+      const updated = filterExpiredNotes([newNote, ...prev]);
       saveLocalNotes(updated);
       return updated;
     });
@@ -159,23 +190,6 @@ export const NotesSection: React.FC = () => {
     }
   };
 
-  const handleDeleteNote = async (id: string) => {
-    // Immediately delete from local UI and localStorage
-    setNotes((prev) => {
-      const updated = prev.filter((n) => n.id !== id);
-      saveLocalNotes(updated);
-      return updated;
-    });
-
-    try {
-      await fetch(`/api/notes?id=${encodeURIComponent(id)}`, {
-        method: 'DELETE',
-      });
-    } catch (err) {
-      console.error('Failed to delete note on server:', err);
-    }
-  };
-
   return (
     <div className="bg-[#0a1219] border border-[#142330] rounded-xl p-4 sm:p-5 space-y-4 font-mono">
       {/* Header */}
@@ -183,13 +197,16 @@ export const NotesSection: React.FC = () => {
         <div className="flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-[#00ff66]" />
           <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-wider">
-            Placement Prep &amp; Shared Notes
+            Live Notes &amp; Prep Board
           </h2>
+          <span className="text-[10px] text-amber-400 border border-amber-400/30 bg-amber-400/10 px-1.5 py-0.5 rounded tracking-wider uppercase font-semibold">
+            24H EPHEMERAL
+          </span>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="text-[11px] text-[#546b80] hidden sm:inline">
-            [ {notes.length} NOTES ]
+            [ {notes.length} ACTIVE ]
           </span>
           <button
             onClick={() => fetchNotes()}
@@ -240,7 +257,7 @@ export const NotesSection: React.FC = () => {
       <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
         {notes.length === 0 ? (
           <div className="py-8 text-center text-xs text-[#546b80] tracking-wider border border-dashed border-[#142330] rounded-lg">
-            [ NO NOTES YET. BE THE FIRST TO POST AN INTERVIEW QUESTION OR UPDATE! ]
+            [ NO ACTIVE NOTES. POSTS ARE SHARED IN REAL-TIME AND AUTO-PURGE AFTER 24 HOURS. ]
           </div>
         ) : (
           notes.map((item) => (
@@ -259,13 +276,11 @@ export const NotesSection: React.FC = () => {
                   </span>
                 </div>
 
-                <button
-                  onClick={() => handleDeleteNote(item.id)}
-                  className="text-[#546b80] hover:text-red-400 p-1 opacity-70 group-hover:opacity-100 transition-opacity cursor-pointer"
-                  title="Delete Note"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                {/* Auto-expire countdown badge */}
+                <div className="flex items-center gap-1 text-[10px] text-amber-400/90 font-mono tracking-wider shrink-0 bg-[#0a1219] border border-[#142330] px-1.5 py-0.5 rounded">
+                  <Clock className="w-3 h-3 text-amber-400/80" />
+                  <span>{getTimeRemaining(item.createdAt)}</span>
+                </div>
               </div>
 
               <p className="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
