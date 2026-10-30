@@ -83,15 +83,17 @@ export async function POST(req: Request) {
     }
 
     const now = new Date();
-    const timestampFormatted = now.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    });
+    const timestampFormatted = now
+      .toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      })
+      .toUpperCase();
 
     const newNote: NoteItem = {
       id: body.id || `note_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,

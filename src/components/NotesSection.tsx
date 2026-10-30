@@ -13,6 +13,23 @@ interface NoteItem {
 
 const STORAGE_KEY = 'placement_terminal_notes_v1';
 
+function formatNoteTimestamp(createdAt?: string, fallback?: string): string {
+  if (!createdAt) return fallback || '';
+  const d = new Date(createdAt);
+  if (isNaN(d.getTime())) return fallback || '';
+  return d
+    .toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    })
+    .toUpperCase();
+}
+
 function getLocalNotes(): NoteItem[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -109,15 +126,7 @@ export const NotesSection: React.FC = () => {
     const trimmedText = inputText.trim();
     const author = authorName.trim() || 'Candidate';
     const now = new Date();
-    const timestampFormatted = now.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    });
+    const timestampFormatted = formatNoteTimestamp(now.toISOString());
 
     // Optimistic local note item
     const newNote: NoteItem = {
@@ -245,7 +254,9 @@ export const NotesSection: React.FC = () => {
                     {item.author}
                   </span>
                   <span className="text-[#334657]">&bull;</span>
-                  <span className="text-[#546b80]">{item.timestampFormatted}</span>
+                  <span className="text-[#546b80]">
+                    {formatNoteTimestamp(item.createdAt, item.timestampFormatted)}
+                  </span>
                 </div>
 
                 <button
