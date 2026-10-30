@@ -250,46 +250,55 @@ export const UpcomingActivities: React.FC<{
                   className="py-3 flex items-center justify-between gap-3 group hover:bg-[#0e1720]/80 px-2 rounded-md transition-colors cursor-pointer"
                   title="Click to view full details"
                 >
-                  {/* Left: Number + Avatar + Company Info */}
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <span className="text-xs sm:text-sm text-[#546b80] font-mono shrink-0 w-8">
+                  {/* Left: Number (desktop only) + Avatar + Company Info */}
+                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                    <span className="hidden sm:inline-block text-xs sm:text-sm text-[#546b80] font-mono shrink-0 w-8">
                       {itemNumber}
                     </span>
 
                     {/* Badge / Avatar */}
-                    <div className="w-10 h-10 rounded-md border border-[#142330] bg-[#070c12] text-slate-100 flex items-center justify-center font-bold text-sm shrink-0 group-hover:border-[#00ff66]/60 transition-colors">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-[#142330] bg-[#070c12] text-slate-100 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 group-hover:border-[#00ff66]/60 transition-colors">
                       {initials}
                     </div>
 
-                    {/* Text Details */}
+                    {/* Text Details & Badges */}
                     <div className="min-w-0 flex-1">
-                      <div className="font-bold text-sm sm:text-base text-white truncate tracking-wide group-hover:text-[#00ff66] transition-colors">
-                        {act.displayCompany}
-                      </div>
-                      <div className="text-xs text-[#70879d] truncate mt-0.5">
-                        {act.role}
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs text-[#546b80] mt-0.5">
-                        <Clock className="w-3.5 h-3.5 text-[#546b80] shrink-0" />
-                        <span className="uppercase tracking-wider">
-                          {act.dateStr} &bull; {activeTab === 'today' ? 'TODAY' : 'TOMORROW'}
+                      {/* Row 1: Company + Type Badge */}
+                      <div className="flex items-center justify-between gap-1.5">
+                        <span className="font-bold text-xs sm:text-sm md:text-base text-white truncate tracking-wide group-hover:text-[#00ff66] transition-colors">
+                          {act.displayCompany}
                         </span>
+
+                        <span
+                          className={`text-[9px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 rounded font-mono font-semibold tracking-wider shrink-0 ${
+                            isInterview
+                              ? 'border border-sky-500/50 text-sky-400 bg-sky-950/20'
+                              : 'border border-emerald-500/50 text-emerald-400 bg-emerald-950/20'
+                          }`}
+                        >
+                          [ {isInterview ? 'INTERVIEW' : 'OA'} ]
+                        </span>
+                      </div>
+
+                      {/* Row 2: Role + Schedule Date */}
+                      <div className="flex items-center justify-between gap-2 mt-0.5 text-xs text-[#70879d]">
+                        <span className="truncate text-[11px] sm:text-xs">
+                          {act.role}
+                        </span>
+
+                        <div className="flex items-center gap-1 text-[10px] sm:text-xs text-[#546b80] shrink-0">
+                          <Clock className="w-3 h-3 text-[#546b80] shrink-0" />
+                          <span className="uppercase tracking-wider">
+                            <span className="sm:hidden">{activeTab === 'today' ? 'TODAY' : 'TOMORROW'}</span>
+                            <span className="hidden sm:inline">{act.dateStr} &bull; {activeTab === 'today' ? 'TODAY' : 'TOMORROW'}</span>
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Right: Pill Badge + Chevron */}
-                  <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                    <span
-                      className={`text-xs px-2.5 py-0.5 rounded font-mono font-semibold tracking-wider ${
-                        isInterview
-                          ? 'border border-sky-500/50 text-sky-400 bg-sky-950/20'
-                          : 'border border-emerald-500/50 text-emerald-400 bg-emerald-950/20'
-                      }`}
-                    >
-                      [ {isInterview ? 'INTERVIEW' : 'OA'} ]
-                    </span>
-
+                  {/* Right: Chevron */}
+                  <div className="hidden sm:flex items-center pl-1 shrink-0">
                     <ChevronRight className="w-4 h-4 text-[#546b80] group-hover:text-[#00ff66] transition-all" />
                   </div>
                 </div>

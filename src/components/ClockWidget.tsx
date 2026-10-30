@@ -44,12 +44,12 @@ export const ClockWidget: React.FC<ClockWidgetProps> = ({
     : '17:13:06';
 
   return (
-    <div className={`flex items-center gap-2 font-mono ${className}`}>
-      <span className="text-[11px] font-semibold text-[#748ba0] uppercase tracking-wider">
+    <div className={`flex items-center gap-1.5 sm:gap-2 font-mono ${className}`}>
+      <span className="hidden sm:inline text-[11px] font-semibold text-[#748ba0] uppercase tracking-wider">
         {dateFormatted}
       </span>
-      <span className="text-[#334657] text-xs">&bull;</span>
-      <span className="text-xs sm:text-sm font-bold text-slate-100 tracking-wider">
+      <span className="hidden sm:inline text-[#334657] text-xs">&bull;</span>
+      <span className="text-xs sm:text-sm font-bold text-[#00ff66] sm:text-slate-100 tracking-wider">
         {timeFormatted}
       </span>
     </div>

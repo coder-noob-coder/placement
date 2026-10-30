@@ -42,11 +42,11 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-13 sm:h-14">
           {/* Left: [>] PLACEMENT TRACKER 2026 */}
-          <div className="flex items-center gap-2">
-            <span className="text-[#00ff66] font-bold text-sm tracking-wider">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <span className="text-[#00ff66] font-bold text-xs sm:text-sm tracking-wider shrink-0">
               [&gt;]
             </span>
-            <span className="font-bold text-sm text-white tracking-wider">
+            <span className="font-bold text-xs sm:text-sm text-white tracking-wider whitespace-nowrap truncate">
               PLACEMENT TRACKER 2026
             </span>
           </div>
@@ -169,54 +169,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         )}
 
-        {/* Mobile Horizontal Tabs Row */}
-        {onTabChange && (
-          <div className="md:hidden flex items-center gap-2 py-1.5 overflow-x-auto border-t border-[#142330] scrollbar-none">
-            <button
-              onClick={() => onTabChange('dashboard')}
-              className={`shrink-0 px-2.5 py-0.5 rounded text-xs font-semibold tracking-wider transition-all cursor-pointer ${
-                activeTab === 'dashboard'
-                  ? 'border border-[#00ff66] text-[#00ff66] bg-[#00ff66]/10'
-                  : 'text-[#61788d] border border-transparent'
-              }`}
-            >
-              [01] DASHBOARD
-            </button>
 
-            <button
-              onClick={() => onTabChange('pipeline')}
-              className={`shrink-0 px-2.5 py-0.5 rounded text-xs font-semibold tracking-wider transition-all cursor-pointer ${
-                activeTab === 'pipeline'
-                  ? 'border border-[#00ff66] text-[#00ff66] bg-[#00ff66]/10'
-                  : 'text-[#61788d] border border-transparent'
-              }`}
-            >
-              [02] PIPELINE
-            </button>
-
-            <button
-              onClick={() => onTabChange('interviews')}
-              className={`shrink-0 px-2.5 py-0.5 rounded text-xs font-semibold tracking-wider transition-all cursor-pointer ${
-                activeTab === 'interviews'
-                  ? 'border border-[#00ff66] text-[#00ff66] bg-[#00ff66]/10'
-                  : 'text-[#61788d] border border-transparent'
-              }`}
-            >
-              [03] INTERVIEWS
-            </button>
-
-            <button
-              onClick={() => onTabChange('past')}
-              className={`shrink-0 px-2.5 py-0.5 rounded text-xs font-semibold tracking-wider transition-all cursor-pointer ${
-                activeTab === 'past'
-                  ? 'border border-[#00ff66] text-[#00ff66] bg-[#00ff66]/10'
-                  : 'text-[#61788d] border border-transparent'
-              }`}
-            >
-              [04] PAST
-            </button>
-          </div>
-        )}
       </div>
     </header>
   );
