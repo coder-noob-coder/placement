@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { PlacementDrive } from '@/lib/db';
-import { Calendar, Check, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronRight } from 'lucide-react';
 import { CompanyLogo } from './CompanyLogo';
 
 interface CompanyCardProps {
@@ -112,11 +112,12 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
           </div>
         </div>
 
-        {/* Placed Badge (if student placed count is present) */}
+        {/* Placed Badge (shows number of placed students instead of tick symbol) */}
         {drive.studentsPlaced ? (
-          <span className="border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 text-xs px-2.5 py-1 rounded-xl flex items-center gap-1 font-semibold shrink-0">
-            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>Placed</span>
+          <span className="border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 text-xs px-2.5 py-1 rounded-xl flex items-center font-semibold shrink-0">
+            {/placed/i.test(drive.studentsPlaced)
+              ? drive.studentsPlaced
+              : `${drive.studentsPlaced} Placed`}
           </span>
         ) : null}
       </div>
