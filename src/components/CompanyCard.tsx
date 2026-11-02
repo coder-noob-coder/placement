@@ -193,8 +193,11 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
           ) : null}
         </div>
 
-        {/* Chevron > */}
-        <ChevronRight className="w-4 h-4 text-[#70879d] group-hover:text-white transition-colors ml-auto shrink-0" />
+        {/* Details > */}
+        <div className="flex items-center gap-0.5 text-[11px] text-[#70879d] group-hover:text-white transition-colors ml-auto shrink-0 font-medium">
+          <span>Details</span>
+          <ChevronRight className="w-3.5 h-3.5" />
+        </div>
       </div>
     </div>
   );
