@@ -5,7 +5,7 @@ import { ClockWidget } from './ClockWidget';
 
 export const GreetingCard: React.FC = () => {
   return (
-    <div className="bg-[#0a1219] border border-[#142330] rounded-lg px-3 py-1.5 sm:px-3.5 sm:py-2 flex items-center justify-between font-mono shadow-xs transition-colors select-none">
+    <div className="bg-[#0c1520] border border-[#1b2d3e] shadow-sm shadow-black/20 rounded-lg px-3 py-1.5 sm:px-3.5 sm:py-2 flex items-center justify-between font-mono shadow-xs transition-colors select-none">
       {/* Left side: Greeting + Neutral Title in single line */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
         <span className="text-[10px] uppercase tracking-widest text-[#546b80] font-semibold shrink-0">

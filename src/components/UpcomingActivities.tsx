@@ -154,7 +154,7 @@ export const UpcomingActivities: React.FC<{
   };
 
   return (
-    <section className="bg-[#0a1219] border border-[#142330] rounded-xl p-4 sm:p-5 font-mono shadow-xs transition-colors">
+    <section className="bg-[#0c1520] border border-[#1b2d3e] rounded-xl p-4 sm:p-5 font-mono shadow-md shadow-black/30 transition-colors">
       {/* Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#142330]">
         <div className="flex items-start sm:items-center gap-3">

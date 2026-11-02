@@ -41,7 +41,7 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({ drive, onSelect, isPas
     <div
       id={`drive-${drive.id}`}
       onClick={() => onSelect?.(drive)}
-      className="bg-[#0a1219] border border-[#142330] hover:border-[#1d354a] hover:bg-[#0c151e] rounded-xl p-4 flex flex-col justify-between transition-all group font-mono shadow-xs cursor-pointer select-none"
+      className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] hover:bg-[#0f1a28] rounded-xl p-4 flex flex-col justify-between transition-all group font-mono shadow-md shadow-black/30 cursor-pointer select-none"
     >
       <div>
         {/* Top Header Row: Tier + Past tag + Placed count */}

@@ -23,7 +23,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       {/* Card 1: Total Pipeline */}
       <div
         onClick={() => onSelectMetric?.('all')}
-        className="bg-[#0a1219] border border-[#142330] hover:border-[#1d354a] hover:bg-[#0c151e] rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
+        className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] hover:bg-[#0f1a28] shadow-sm shadow-black/20 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
         title="View Total Pipeline"
       >
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
@@ -47,7 +47,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       {/* Card 2: Today's Events */}
       <div
         onClick={() => onSelectMetric?.('todayEvents')}
-        className="bg-[#0a1219] border border-[#142330] hover:border-[#1d354a] hover:bg-[#0c151e] rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
+        className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] hover:bg-[#0f1a28] shadow-sm shadow-black/20 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
         title="View Today's Scheduled Events"
       >
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
@@ -71,7 +71,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       {/* Card 3: Tomorrow */}
       <div
         onClick={() => onSelectMetric?.('tomorrow')}
-        className="bg-[#0a1219] border border-[#142330] hover:border-[#1d354a] hover:bg-[#0c151e] rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
+        className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] hover:bg-[#0f1a28] shadow-sm shadow-black/20 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
         title="View Tomorrow's Events"
       >
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
@@ -94,7 +94,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
       {/* Card 4: Closing Today */}
       <div
         onClick={() => onSelectMetric?.('closing')}
-        className="bg-[#0a1219] border border-[#142330] hover:border-[#1d354a] hover:bg-[#0c151e] rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
+        className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] hover:bg-[#0f1a28] shadow-sm shadow-black/20 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
         title="View Registrations Closing Today"
       >
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">

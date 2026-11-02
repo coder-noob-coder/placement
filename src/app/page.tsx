@@ -407,7 +407,7 @@ export default function PlacementTrackerPage() {
               />
 
               {/* Minimal Terminal Notice Banner */}
-              <div className="bg-[#0a1219] border border-[#142330] hover:border-[#1d354a] rounded-lg px-3 py-2 flex items-center gap-2 text-xs font-mono transition-colors select-none">
+              <div className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] shadow-sm shadow-black/20 rounded-lg px-3 py-2 flex items-center gap-2 text-xs font-mono transition-colors select-none">
                 <Info className="w-3.5 h-3.5 text-[#fbbf24] shrink-0" />
                 <span className="text-[#fbbf24] font-bold text-[10px] tracking-wider uppercase shrink-0">
                   [ NOTE ]
@@ -475,27 +475,7 @@ export default function PlacementTrackerPage() {
             />
           )}
 
-          {/* 4. PAST DRIVES VIEW */}
-          {activeTab === 'past' && (
-            <div className="bg-[#0a1219] border border-[#142330] rounded-xl p-3.5 sm:p-4 space-y-2">
-              <div className="flex items-center justify-between pb-2 border-b border-[#142330]">
-                <div className="flex items-center gap-2">
-                  <History className="w-4 h-4 text-[#70879d]" />
-                  <h2 className="font-bold text-white text-xs sm:text-sm uppercase tracking-wider">
-                    Past Companies &amp; Concluded Interviews
-                  </h2>
-                </div>
-                <span className="text-xs text-[#546b80]">
-                  [ {drives.filter(isInterviewOver).length} CONCLUDED ]
-                </span>
-              </div>
-              <p className="text-[11px] text-[#70879d]">
-                Drives where interview rounds have concluded or placement results were declared.
-              </p>
-            </div>
-          )}
-
-          {/* 5. LIVE NOTES VIEW (Shared real-time notes board) */}
+{/* 5. LIVE NOTES VIEW (Shared real-time notes board) */}
           {activeTab === 'notes' && <NotesSection />}
 
           {/* PIPELINE / CARDS SECTION */}
@@ -510,7 +490,7 @@ export default function PlacementTrackerPage() {
                   <span className="text-[#00ff66] font-bold text-xs">[&gt;]</span>
                   <h2 className="text-xs font-bold text-white uppercase tracking-wider">
                     {activeTab === 'past'
-                      ? 'Concluded & Past Recruitment Drives'
+                      ? 'Concluded Companies'
                       : activeTab === 'interviews'
                       ? 'Scheduled Assessments & Interviews'
                       : activeTab === 'applications'
