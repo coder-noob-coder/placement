@@ -189,20 +189,17 @@ export default function PlacementTrackerPage() {
     };
   }, [fetchPlacements]);
 
-  // Tiers and counts
+  // Tiers and counts: Strictly Tier 1 and Tier 2 only
   const availableTiers = useMemo(() => {
-    const rawTiers = drives.map((d) => d.tier).filter(Boolean);
-    const unique = Array.from(new Set(rawTiers));
-    unique.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-    return ['All', ...unique];
-  }, [drives]);
+    return ['All', 'Tier 1', 'Tier 2'];
+  }, []);
 
   const tierCounts = useMemo(() => {
-    const counts: Record<string, number> = { All: drives.length };
-    drives.forEach((d) => {
-      const t = d.tier || 'Other';
-      counts[t] = (counts[t] || 0) + 1;
-    });
+    const counts: Record<string, number> = {
+      All: drives.length,
+      'Tier 1': drives.filter((d) => d.tier === 'Tier 1').length,
+      'Tier 2': drives.filter((d) => d.tier === 'Tier 2').length,
+    };
     return counts;
   }, [drives]);
 
