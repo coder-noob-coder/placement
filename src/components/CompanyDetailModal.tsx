@@ -80,7 +80,7 @@ export const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({ drive, o
 
             <div className="flex items-center gap-2">
               <span className={`text-xs px-2.5 py-1 rounded border font-semibold ${getTierTag(drive.tier)}`}>
-                {drive.tier}
+                [ {drive.tier} ]
               </span>
 
               {drive.studentsPlaced && (
@@ -98,7 +98,7 @@ export const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({ drive, o
               <span className="text-[11px] text-slate-400 uppercase tracking-wider block font-semibold">
                 CTC PACKAGE
               </span>
-              <span className="text-base sm:text-lg font-bold text-white block mt-1">
+              <span className="text-base sm:text-lg font-bold text-[#00ff66] block mt-1">
                 {drive.ctc}
               </span>
             </div>
@@ -181,7 +181,7 @@ export const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({ drive, o
             onClick={onClose}
             className="px-4 py-1.5 rounded-md border border-[#162531] hover:border-slate-500 bg-[#0c141c] text-xs font-bold text-slate-300 hover:text-white transition-colors cursor-pointer uppercase"
           >
-            CLOSE
+            [ CLOSE ]
           </button>
         </div>
       </div>

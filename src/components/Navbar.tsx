@@ -43,8 +43,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-13 sm:h-14">
           {/* Left: [>] PLACEMENT TRACKER 2026 */}
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <span className="text-slate-400 font-bold text-xs sm:text-sm tracking-wider shrink-0">
-              &gt;
+            <span className="text-[#00ff66] font-bold text-xs sm:text-sm tracking-wider shrink-0">
+              [&gt;]
             </span>
             <span className="font-bold text-xs sm:text-sm text-white tracking-wider whitespace-nowrap truncate">
               PLACEMENT TRACKER 2026
@@ -96,7 +96,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <RefreshCw
                 className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-[#00ff66]' : ''}`}
               />
-              <span className="hidden sm:inline">R</span>
+              <span className="hidden sm:inline">[R]</span>
             </button>
 
             {/* Mobile 3-Dots Menu Button */}

@@ -13,7 +13,7 @@ export const GreetingCard: React.FC = () => {
         </span>
         <span className="text-xs sm:text-sm font-bold text-white tracking-tight flex items-center gap-1 shrink-0">
           <span>Candidate</span>
-          <span className="text-slate-400 font-normal">_</span>
+          <span className="text-[#00ff66] animate-cursor font-normal">_</span>
         </span>
         <span className="text-[11px] text-[#546b80] uppercase tracking-wider hidden md:inline">
           &bull; PLACEMENT OVERVIEW

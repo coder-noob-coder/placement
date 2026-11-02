@@ -27,7 +27,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         title="View Total Pipeline"
       >
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <FileSpreadsheet className="w-3.5 h-3.5 text-slate-300 shrink-0" />
+          <FileSpreadsheet className="w-3.5 h-3.5 text-[#00ff66] shrink-0" />
           <span className="text-[10px] sm:text-[11px] font-semibold text-[#748ba0] tracking-wider uppercase truncate">
             <span className="sm:hidden">TOTAL</span>
             <span className="hidden sm:inline">TOTAL PIPELINE</span>
@@ -35,8 +35,11 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <span className="text-sm sm:text-base md:text-lg font-extrabold text-white">
+          <span className="text-sm sm:text-base md:text-lg font-extrabold text-[#00ff66]">
             {total}
+          </span>
+          <span className="hidden sm:inline text-[10px] text-[#546b80] group-hover:text-[#00ff66] transition-colors tracking-widest">
+            &gt;&gt;&gt;
           </span>
         </div>
       </div>
@@ -59,6 +62,9 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           <span className="text-sm sm:text-base md:text-lg font-extrabold text-white">
             {todayEvents}
           </span>
+          <span className="hidden sm:inline text-[10px] text-[#546b80] group-hover:text-white transition-colors tracking-widest">
+            &gt;&gt;&gt;
+          </span>
         </div>
       </div>
 
@@ -78,6 +84,9 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <span className="text-sm sm:text-base md:text-lg font-extrabold text-[#fbbf24]">
             {tomorrowEvents}
+          </span>
+          <span className="hidden sm:inline text-[10px] text-[#546b80] group-hover:text-[#fbbf24] transition-colors tracking-widest">
+            &gt;&gt;&gt;
           </span>
         </div>
       </div>
@@ -102,6 +111,9 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           </span>
           <span className="text-[8px] sm:text-[9px] text-[#ef4444] border border-[#ef4444]/40 bg-[#ef4444]/5 px-1 py-0.2 rounded uppercase font-semibold">
             ACTION
+          </span>
+          <span className="hidden sm:inline text-[10px] text-[#546b80] group-hover:text-[#ef4444] transition-colors tracking-widest">
+            &gt;&gt;&gt;
           </span>
         </div>
       </div>

@@ -184,8 +184,8 @@ export const UpcomingActivities: React.FC<{
                 Daily Action Agenda
               </h2>
               {/* Mobile count badge */}
-              <span className="sm:hidden text-xs font-bold px-2 py-0.5 rounded border border-[#142330] text-white bg-[#070c12]">
-                {todayActivities.length}
+              <span className="sm:hidden text-xs font-bold px-2 py-0.5 rounded border border-[#00ff66]/40 text-[#00ff66] bg-[#00ff66]/10">
+                [ {todayActivities.length} ]
               </span>
             </div>
             <p className="text-xs text-[#61788d] mt-0.5 tracking-tight">
@@ -204,7 +204,7 @@ export const UpcomingActivities: React.FC<{
                 : 'border border-[#142330] text-[#61788d] hover:text-slate-200'
             }`}
           >
-            TODAY ({todayActivities.length})
+            [ TODAY ({todayActivities.length}) ]
           </button>
 
           <button
@@ -265,7 +265,7 @@ export const UpcomingActivities: React.FC<{
                     <div className="min-w-0 flex-1">
                       {/* Row 1: Company + Type Badge */}
                       <div className="flex items-center justify-between gap-1.5">
-                        <span className="font-bold text-xs sm:text-sm md:text-base text-white truncate tracking-wide group-hover:text-slate-100 transition-colors">
+                        <span className="font-bold text-xs sm:text-sm md:text-base text-white truncate tracking-wide group-hover:text-[#00ff66] transition-colors">
                           {act.displayCompany}
                         </span>
 
@@ -276,7 +276,7 @@ export const UpcomingActivities: React.FC<{
                               : 'border border-emerald-500/50 text-emerald-400 bg-emerald-950/20'
                           }`}
                         >
-                          {isInterview ? 'INTERVIEW' : 'OA'}
+                          [ {isInterview ? 'INTERVIEW' : 'OA'} ]
                         </span>
                       </div>
 
@@ -299,7 +299,7 @@ export const UpcomingActivities: React.FC<{
 
                   {/* Right: Chevron */}
                   <div className="hidden sm:flex items-center pl-1 shrink-0">
-                    <ChevronRight className="w-4 h-4 text-[#546b80] group-hover:text-slate-100 transition-all" />
+                    <ChevronRight className="w-4 h-4 text-[#546b80] group-hover:text-[#00ff66] transition-all" />
                   </div>
                 </div>
               );
