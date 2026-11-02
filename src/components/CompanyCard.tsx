@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { PlacementDrive } from '@/lib/db';
-import { Calendar, GraduationCap, Clock, Users } from 'lucide-react';
+import { Calendar, Check, ChevronRight } from 'lucide-react';
+import { CompanyLogo } from './CompanyLogo';
 
 interface CompanyCardProps {
   drive: PlacementDrive;
@@ -10,139 +11,189 @@ interface CompanyCardProps {
   isPast?: boolean;
 }
 
-export const CompanyCard: React.FC<CompanyCardProps> = ({ drive, onSelect, isPast = false }) => {
-  const getTierTag = (tier: string) => {
-    const t = (tier || '').toLowerCase();
-    if (t.includes('super dream')) {
-      return 'border-amber-500/50 text-amber-400 bg-amber-950/10';
-    }
-    if (t.includes('dream')) {
-      return 'border-indigo-500/50 text-indigo-400 bg-indigo-950/10';
-    }
-    if (t.includes('tier 1')) {
-      return 'border-emerald-500/50 text-emerald-400 bg-emerald-950/10';
-    }
-    if (t.includes('tier 2') || t === '2') {
-      return 'border-sky-500/50 text-sky-400 bg-sky-950/10';
-    }
-    return 'border-[#142330] text-[#70879d] bg-[#070c12]';
-  };
+function formatDateShort(str?: string): string {
+  if (!str) return '—';
+  const clean = str.trim();
+  if (
+    clean.toLowerCase().includes('not') ||
+    clean.toLowerCase().includes('tba') ||
+    clean.toLowerCase().includes('tbd')
+  ) {
+    return 'TBA';
+  }
+  // Replace 2026 with '26, 2025 with '25
+  return clean.replace(/\b20(\d{2})\b/, "'$1");
+}
 
-  const getCompanyInitials = (name: string) => {
-    const clean = name.replace(/[^a-zA-Z]/g, ' ').trim();
-    const parts = clean.split(/\s+/).filter(Boolean);
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
+function formatCtc(rawCtc?: string): { value: string; isNotSpecified: boolean } {
+  if (!rawCtc || !rawCtc.trim()) {
+    return { value: 'Not Specified', isNotSpecified: true };
+  }
+  const clean = rawCtc.trim();
+  const lower = clean.toLowerCase();
+  if (
+    lower.includes('not') ||
+    lower.includes('check') ||
+    lower.includes('tba') ||
+    lower.includes('tbd') ||
+    lower === '—' ||
+    lower === '-'
+  ) {
+    return { value: 'Not Specified', isNotSpecified: true };
+  }
+
+  // If contains numbers, ensure ₹ prefix
+  if (/\d/.test(clean)) {
+    if (!clean.startsWith('₹') && !clean.startsWith('Rs') && !clean.startsWith('INR')) {
+      return { value: `₹${clean}`, isNotSpecified: false };
     }
-    return name.slice(0, 2).toUpperCase();
-  };
+  }
+  return { value: clean, isNotSpecified: false };
+}
+
+function formatStipend(rawStipend?: string): string {
+  if (!rawStipend || !rawStipend.trim()) return '';
+  const clean = rawStipend.trim();
+  const lower = clean.toLowerCase();
+  if (
+    lower === '—' ||
+    lower === '-' ||
+    lower === 'nil' ||
+    lower === 'na' ||
+    lower === 'n/a'
+  ) {
+    return '';
+  }
+  if (/\d/.test(clean) && !clean.startsWith('₹')) {
+    return `₹${clean}`;
+  }
+  return clean;
+}
+
+export const CompanyCard: React.FC<CompanyCardProps> = ({
+  drive,
+  onSelect,
+  isPast = false,
+}) => {
+  const ctcInfo = formatCtc(drive.ctc);
+  const formattedStipend = formatStipend(drive.stipend);
 
   return (
     <div
       id={`drive-${drive.id}`}
       onClick={() => onSelect?.(drive)}
-      className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] hover:bg-[#0f1a28] rounded-xl p-4 flex flex-col justify-between transition-all group font-mono shadow-md shadow-black/30 cursor-pointer select-none"
+      className="bg-[#0c141f] border border-[#1b2737] hover:border-[#2a3c50] rounded-2xl p-4 transition-all space-y-3 cursor-pointer group shadow-sm shadow-black/20 select-none"
     >
-      <div>
-        {/* Top Header Row: Tier + Past tag + Placed count */}
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span
-              className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${getTierTag(
-                drive.tier
-              )}`}
-            >
-              {drive.tier}
-            </span>
+      {/* Top Header: Logo + Company Info + Placed Status */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          {/* White rounded square logo container */}
+          <CompanyLogo company={drive.company} size="md" />
 
-            {isPast && (
-              <span className="text-[10px] uppercase px-1.5 py-0.5 rounded border border-[#142330] text-[#546b80] bg-[#070c12]">
-                PAST
+          <div className="min-w-0 flex-1">
+            <h3 className="font-bold text-white text-base sm:text-lg leading-tight truncate group-hover:text-[#22c55e] transition-colors">
+              {drive.company}
+            </h3>
+            <p className="text-xs text-[#8fa0b2] truncate mt-0.5 font-normal">
+              {drive.role || 'Job Profile'}
+            </p>
+
+            {/* Badges: Tier 1/2, Past */}
+            <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+              <span className="border border-emerald-500/50 text-emerald-400 bg-emerald-950/20 text-[11px] px-2.5 py-0.5 rounded-full font-medium inline-flex items-center">
+                {drive.tier}
               </span>
-            )}
+              {isPast && (
+                <span className="border border-[#223345] text-[#8fa0b2] bg-[#131e2b] text-[11px] px-2.5 py-0.5 rounded-full font-medium inline-flex items-center">
+                  Past
+                </span>
+              )}
+            </div>
           </div>
+        </div>
 
-          {/* Minimal Students Placed Pill */}
-          {drive.studentsPlaced ? (
-            <span className="text-[10px] font-semibold text-emerald-400 border border-emerald-500/30 bg-emerald-950/10 px-2 py-0.5 rounded flex items-center gap-1">
-              <Users className="w-3 h-3 text-emerald-400" />
-              <span>{drive.studentsPlaced} Placed</span>
-            </span>
-          ) : drive.dateListed ? (
-            <span className="text-[10px] text-[#546b80]">
-              {drive.dateListed.toUpperCase()}
-            </span>
+        {/* Placed Badge (if student placed count is present) */}
+        {drive.studentsPlaced ? (
+          <span className="border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 text-xs px-2.5 py-1 rounded-xl flex items-center gap-1 font-semibold shrink-0">
+            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Placed</span>
+          </span>
+        ) : null}
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-[#172332]" />
+
+      {/* Middle Section: Compensation (Package & Stipend) */}
+      <div className="flex items-center">
+        {/* Package Column */}
+        <div className="flex-1 min-w-0">
+          <div
+            className={`text-base sm:text-lg font-bold truncate ${
+              ctcInfo.isNotSpecified ? 'text-white' : 'text-[#22c55e]'
+            }`}
+          >
+            {ctcInfo.value}
+          </div>
+          <div className="text-[11px] text-[#70879d] font-normal mt-0.5">
+            Package
+          </div>
+        </div>
+
+        {/* Stipend Column (if available) */}
+        {formattedStipend ? (
+          <>
+            <div className="w-px h-8 bg-[#172332] mx-4 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="text-base sm:text-lg font-bold text-white truncate">
+                {formattedStipend}
+              </div>
+              <div className="text-[11px] text-[#70879d] font-normal mt-0.5">
+                Stipend
+              </div>
+            </div>
+          </>
+        ) : null}
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-[#172332]" />
+
+      {/* Bottom Section: Schedule Dates & Chevron */}
+      <div className="flex items-center justify-between text-xs text-[#8fa0b2] font-medium pt-0.5">
+        <div className="flex items-center gap-2 flex-wrap min-w-0">
+          {/* OA Date */}
+          {drive.oaDate ? (
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Calendar className="w-3.5 h-3.5 text-[#70879d]" />
+              <span>OA: {formatDateShort(drive.oaDate)}</span>
+            </div>
+          ) : null}
+
+          {/* Divider between OA and Interview */}
+          {drive.oaDate && drive.interviewDate ? (
+            <span className="text-[#1e2c3c] mx-0.5">|</span>
+          ) : null}
+
+          {/* Interview Date */}
+          {drive.interviewDate ? (
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Calendar className="w-3.5 h-3.5 text-[#70879d]" />
+              <span>INT: {formatDateShort(drive.interviewDate)}</span>
+            </div>
+          ) : null}
+
+          {/* If neither OA nor Interview exists, show Deadline */}
+          {!drive.oaDate && !drive.interviewDate && drive.deadline ? (
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Calendar className="w-3.5 h-3.5 text-[#70879d]" />
+              <span>Deadline: {formatDateShort(drive.deadline)}</span>
+            </div>
           ) : null}
         </div>
 
-        {/* Company Identity & Role */}
-        <div className="flex items-start gap-3 mb-3">
-          <div className="w-9 h-9 rounded-md border border-[#142330] bg-[#070c12] text-white flex items-center justify-center font-bold text-xs shrink-0 group-hover:border-[#00ff66]/50 transition-colors">
-            {getCompanyInitials(drive.company)}
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-white text-sm sm:text-base leading-snug truncate group-hover:text-[#00ff66] transition-colors">
-              {drive.company}
-            </h3>
-            <p className="text-xs text-[#70879d] mt-0.5 line-clamp-1">{drive.role}</p>
-          </div>
-        </div>
-
-        {/* Clean Minimal Compensation Row */}
-        <div className="py-2 px-2.5 rounded bg-[#070c12] border border-[#142330] mb-3 flex items-center justify-between text-xs">
-          <div>
-            <span className="text-[10px] uppercase text-[#546b80] block">PACKAGE</span>
-            <span className="font-bold text-[#00ff66] block mt-0.5">{drive.ctc}</span>
-          </div>
-          {drive.stipend && (
-            <div className="text-right">
-              <span className="text-[10px] uppercase text-[#546b80] block">STIPEND</span>
-              <span className="font-medium text-slate-300 block mt-0.5">{drive.stipend}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Schedule & Requirements Badges (Minimal Line) */}
-        {(drive.cgpaCutoff || drive.oaDate || drive.interviewDate) && (
-          <div className="flex flex-wrap items-center gap-1.5 mb-2 text-[10px]">
-            {drive.cgpaCutoff && (
-              <span className="px-2 py-0.5 rounded border border-amber-500/30 text-amber-400 bg-amber-950/10 flex items-center gap-1">
-                <GraduationCap className="w-3 h-3" />
-                <span>Min {drive.cgpaCutoff}</span>
-              </span>
-            )}
-
-            {drive.oaDate && (
-              <span className="px-2 py-0.5 rounded border border-sky-500/30 text-sky-400 bg-sky-950/10 flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                <span>OA: {drive.oaDate}</span>
-              </span>
-            )}
-
-            {drive.interviewDate && (
-              <span className="px-2 py-0.5 rounded border border-purple-500/30 text-purple-400 bg-purple-950/10 flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                <span>INT: {drive.interviewDate}</span>
-              </span>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Footer: Registration Deadline (Clean & Minimal) */}
-      <div className="pt-2.5 border-t border-[#142330] flex items-center justify-between gap-2 mt-auto text-xs">
-        <div className="flex items-center gap-1.5 text-[#546b80]">
-          <Clock className="w-3.5 h-3.5 text-[#546b80] shrink-0" />
-          <span className="truncate text-[11px]">
-            {drive.deadline ? `ENDS ${drive.deadline.toUpperCase()}` : 'NO DEADLINE'}
-          </span>
-        </div>
-
-        <span className="text-[11px] text-[#546b80] group-hover:text-[#00ff66] transition-colors flex items-center gap-0.5">
-          <span>DETAILS</span>
-          <span>&gt;</span>
-        </span>
+        {/* Chevron > */}
+        <ChevronRight className="w-4 h-4 text-[#70879d] group-hover:text-white transition-colors ml-auto shrink-0" />
       </div>
     </div>
   );

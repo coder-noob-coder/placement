@@ -14,7 +14,7 @@
   --header-bg: #ffffff;
   --scrollbar-track: #f1f5f9;
   --scrollbar-thumb: #cbd5e1;
-  --neon-green: #00ff66;
+  --neon-green: #22c55e;
   --neon-cyan: #38bdf8;
   --neon-amber: #f59e0b;
   --neon-red: #ef4444;
@@ -23,17 +23,17 @@
 .dark {
   --background: #060b10;
   --foreground: #e2e8f0;
-  --surface: #0b131b;
-  --surface-raised: #0e1722;
-  --surface-muted: #080f15;
-  --surface-hover: #111d28;
-  --border: #162531;
-  --border-strong: #1e3547;
+  --surface: #0c141f;
+  --surface-raised: #131d2a;
+  --surface-muted: #070c12;
+  --surface-hover: #182433;
+  --border: #1b2737;
+  --border-strong: #243549;
   --text-muted: #74879b;
   --header-bg: #070c12;
   --scrollbar-track: #060b10;
-  --scrollbar-thumb: #162531;
-  --neon-green: #00ff66;
+  --scrollbar-thumb: #1b2737;
+  --neon-green: #22c55e;
   --neon-cyan: #38bdf8;
   --neon-amber: #f59e0b;
   --neon-red: #ef4444;
@@ -42,12 +42,12 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   min-height: 100vh;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-/* Crisp cyber terminal panels and cards */
+/* Panels and cards */
 .panel {
   background-color: var(--surface);
   border: 1px solid var(--border);
@@ -68,31 +68,11 @@ body {
   border: 1px solid var(--border);
 }
 
-/* Blinking terminal cursor */
-@keyframes cursorBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+/* Custom scrollbar utility */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
-
-.animate-cursor {
-  animation: cursorBlink 1s step-end infinite;
-}
-
-/* Crisp terminal scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--scrollbar-track);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 2px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-strong);
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

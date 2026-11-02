@@ -22,109 +22,109 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   activeTab,
   onTabChange,
 }) => {
-  const isHome = activeTab === 'dashboard';
+  const isHome = activeTab === 'dashboard' || activeTab === 'pipeline';
   const isPast = activeTab === 'past';
   const isNotes = activeTab === 'notes';
   const isCalendar = activeTab === 'calendar';
   const isStats = activeTab === 'analytics';
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#070c12]/95 backdrop-blur-md border-t border-[#162531] px-3 py-2 flex items-center justify-around font-mono">
-      {/* 1. HOME (Dashboard & Pipeline) */}
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#070c12]/95 backdrop-blur-md border-t border-[#172332] px-3 py-1.5 flex items-center justify-around select-none">
+      {/* 1. HOME */}
       <button
         onClick={() => onTabChange('dashboard')}
-        className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
+        className="flex flex-col items-center justify-center py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
       >
-        <Home className={`w-5 h-5 ${isHome ? 'text-[#00ff66]' : 'text-slate-500'}`} />
+        <Home className={`w-5 h-5 ${isHome ? 'text-[#22c55e]' : 'text-slate-400'}`} />
         <span
-          className={`text-[10px] tracking-wider font-semibold uppercase ${
-            isHome ? 'text-[#00ff66]' : 'text-slate-500'
+          className={`text-[11px] font-medium mt-1 transition-colors ${
+            isHome ? 'text-white font-semibold' : 'text-[#70879d]'
           }`}
         >
-          HOME
+          Home
         </span>
         {isHome && (
-          <span className="w-1 h-1 rounded-full bg-[#00ff66] shadow-[0_0_6px_#00ff66] mt-0.5" />
+          <div className="w-6 h-0.5 bg-[#22c55e] rounded-full mt-1" />
         )}
       </button>
 
-      {/* 2. PAST DRIVES (Replaced Pipeline with Past) */}
+      {/* 2. PAST */}
       <button
         onClick={() => onTabChange('past')}
-        className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
+        className="flex flex-col items-center justify-center py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
       >
         <History
-          className={`w-5 h-5 ${isPast ? 'text-[#00ff66]' : 'text-slate-500'}`}
+          className={`w-5 h-5 ${isPast ? 'text-[#22c55e]' : 'text-slate-400'}`}
         />
         <span
-          className={`text-[10px] tracking-wider font-semibold uppercase ${
-            isPast ? 'text-[#00ff66]' : 'text-slate-500'
+          className={`text-[11px] font-medium mt-1 transition-colors ${
+            isPast ? 'text-white font-semibold' : 'text-[#70879d]'
           }`}
         >
-          PAST
+          Past
         </span>
         {isPast && (
-          <span className="w-1 h-1 rounded-full bg-[#00ff66] shadow-[0_0_6px_#00ff66] mt-0.5" />
+          <div className="w-6 h-0.5 bg-[#22c55e] rounded-full mt-1" />
         )}
       </button>
 
-      {/* 3. SHARED NOTES */}
+      {/* 3. NOTES */}
       <button
         onClick={() => onTabChange('notes')}
-        className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
+        className="flex flex-col items-center justify-center py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
       >
         <StickyNote
-          className={`w-5 h-5 ${isNotes ? 'text-[#00ff66]' : 'text-slate-500'}`}
+          className={`w-5 h-5 ${isNotes ? 'text-[#22c55e]' : 'text-slate-400'}`}
         />
         <span
-          className={`text-[10px] tracking-wider font-semibold uppercase ${
-            isNotes ? 'text-[#00ff66]' : 'text-slate-500'
+          className={`text-[11px] font-medium mt-1 transition-colors ${
+            isNotes ? 'text-white font-semibold' : 'text-[#70879d]'
           }`}
         >
-          NOTES
+          Notes
         </span>
         {isNotes && (
-          <span className="w-1 h-1 rounded-full bg-[#00ff66] shadow-[0_0_6px_#00ff66] mt-0.5" />
+          <div className="w-6 h-0.5 bg-[#22c55e] rounded-full mt-1" />
         )}
       </button>
 
       {/* 4. CALENDAR */}
       <button
         onClick={() => onTabChange('calendar')}
-        className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
+        className="flex flex-col items-center justify-center py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
       >
         <Calendar
-          className={`w-5 h-5 ${isCalendar ? 'text-[#00ff66]' : 'text-slate-500'}`}
+          className={`w-5 h-5 ${isCalendar ? 'text-[#22c55e]' : 'text-slate-400'}`}
         />
         <span
-          className={`text-[10px] tracking-wider font-semibold uppercase ${
-            isCalendar ? 'text-[#00ff66]' : 'text-slate-500'
+          className={`text-[11px] font-medium mt-1 transition-colors ${
+            isCalendar ? 'text-white font-semibold' : 'text-[#70879d]'
           }`}
         >
-          CALENDAR
+          Calendar
         </span>
         {isCalendar && (
-          <span className="w-1 h-1 rounded-full bg-[#00ff66] shadow-[0_0_6px_#00ff66] mt-0.5" />
+          <div className="w-6 h-0.5 bg-[#22c55e] rounded-full mt-1" />
         )}
       </button>
 
       {/* 5. STATS */}
       <button
         onClick={() => onTabChange('analytics')}
-        className="flex flex-col items-center justify-center gap-1 py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
+        className="flex flex-col items-center justify-center py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
       >
         <BarChart2
-          className={`w-5 h-5 ${isStats ? 'text-[#00ff66]' : 'text-slate-500'}`}
+          className={`w-5 h-5 ${isStats ? 'text-[#22c55e]' : 'text-slate-400'}`}
         />
         <span
-          className={`text-[10px] tracking-wider font-semibold uppercase ${
-            isStats ? 'text-[#00ff66]' : 'text-slate-500'
+          className={`text-[11px] font-medium mt-1 transition-colors ${
+            isStats ? 'text-white font-semibold' : 'text-[#70879d]'
           }`}
         >
-          STATS
+          Stats
         </span>
         {isStats && (
-          <span className="w-1 h-1 rounded-full bg-[#00ff66] shadow-[0_0_6px_#00ff66] mt-0.5" />
+          <div className="w-6 h-0.5 bg-[#22c55e] rounded-full mt-1" />
         )}
       </button>
     </nav>

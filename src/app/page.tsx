@@ -373,7 +373,7 @@ export default function PlacementTrackerPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#060b10] text-slate-100 font-mono transition-colors relative selection:bg-[#00ff66]/20 selection:text-[#00ff66]">
+    <div className="min-h-screen flex flex-col bg-[#060b10] text-slate-100 transition-colors relative selection:bg-[#22c55e]/20 selection:text-[#22c55e]">
       {/* Top Header Navbar */}
       <Navbar
         onRefresh={() => fetchPlacements(true)}
@@ -485,20 +485,17 @@ export default function PlacementTrackerPage() {
             activeTab === 'interviews' ||
             activeTab === 'past') && (
             <section id="placements-content" className="pt-1">
-              <div className="flex items-center justify-between mb-2.5 px-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[#00ff66] font-bold text-xs">[&gt;]</span>
-                  <h2 className="text-xs font-bold text-white uppercase tracking-wider">
-                    {activeTab === 'past'
-                      ? 'Concluded Companies'
-                      : activeTab === 'interviews'
-                      ? 'Scheduled Assessments & Interviews'
-                      : activeTab === 'applications'
-                      ? 'Open Application Drives'
-                      : 'Company Pipeline Directory'}
-                  </h2>
-                </div>
-                <span className="text-xs text-[#546b80]">
+              <div className="flex items-center justify-between mb-3 px-0.5">
+                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                  {activeTab === 'past'
+                    ? 'Concluded Companies'
+                    : activeTab === 'interviews'
+                    ? 'Scheduled Interviews'
+                    : activeTab === 'applications'
+                    ? 'Open Applications'
+                    : 'Company Pipeline'}
+                </h2>
+                <span className="text-xs sm:text-sm text-[#70879d] font-medium">
                   {filteredDrives.length} of {drives.length} drives
                 </span>
               </div>

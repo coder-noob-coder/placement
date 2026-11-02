@@ -31,7 +31,7 @@ interface FilterBarProps {
 }
 
 const CTC_OPTIONS: { id: CtcFilterOption; label: string }[] = [
-  { id: 'all', label: 'ALL' },
+  { id: 'all', label: 'All' },
   { id: '5', label: '>5L' },
   { id: '10', label: '>10L' },
   { id: '15', label: '>15L' },
@@ -40,10 +40,10 @@ const CTC_OPTIONS: { id: CtcFilterOption; label: string }[] = [
 ];
 
 const SORT_OPTIONS: { id: DateSortOption; label: string; short: string }[] = [
-  { id: 'deadline-asc', label: 'SOONEST DEADLINE', short: 'SOONEST' },
-  { id: 'deadline-desc', label: 'LATEST DEADLINE', short: 'LATEST' },
-  { id: 'listed-desc', label: 'NEWEST LISTED', short: 'NEWEST' },
-  { id: 'listed-asc', label: 'OLDEST LISTED', short: 'OLDEST' },
+  { id: 'deadline-asc', label: 'Soonest Deadline', short: 'Soonest' },
+  { id: 'deadline-desc', label: 'Latest Deadline', short: 'Latest' },
+  { id: 'listed-desc', label: 'Newest Listed', short: 'Newest' },
+  { id: 'listed-asc', label: 'Oldest Listed', short: 'Oldest' },
 ];
 
 export const FilterBar: React.FC<FilterBarProps> = ({
@@ -79,13 +79,13 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     SORT_OPTIONS.find((opt) => opt.id === sortByDate) || SORT_OPTIONS[0];
 
   return (
-    <div className="bg-[#0c1520] border border-[#1b2d3e] rounded-xl p-3 sm:p-3.5 mb-4 space-y-2 font-mono transition-colors shadow-md shadow-black/30">
-      {/* Row 1: Tiers on left, Sort button on right — clean, fixed, no reset button */}
-      <div className="flex items-center justify-between gap-1.5">
-        {/* Tier Filters: ALL · TIER 1 · TIER 2 */}
-        <div className="flex items-center gap-1 shrink-0">
-          <span className="text-[10px] text-[#546b80] uppercase tracking-wider mr-0.5 font-semibold shrink-0">
-            TIERS:
+    <div className="bg-[#0c141f] border border-[#1b2737] rounded-2xl p-3 sm:p-3.5 mb-4 space-y-2.5 transition-colors shadow-sm shadow-black/20 select-none">
+      {/* Row 1: Tier Filters | Sort Button */}
+      <div className="flex items-center justify-between gap-2 flex-nowrap">
+        {/* Tier Group */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-xs sm:text-sm text-[#70879d] font-medium mr-1 shrink-0">
+            Tier:
           </span>
           {availableTiers.map((tier) => {
             const isSelected = selectedTier === tier;
@@ -94,68 +94,73 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 key={tier}
                 type="button"
                 onClick={() => onTierChange(tier)}
-                className={`px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-mono uppercase tracking-wider shrink-0 transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-xl text-xs font-medium transition-colors cursor-pointer shrink-0 ${
                   isSelected
-                    ? 'border border-[#00ff66] text-[#00ff66] bg-[#00ff66]/10 font-bold'
-                    : 'border border-[#172535] bg-[#070d14] text-[#70879d] hover:text-white'
+                    ? 'bg-[#22c55e] text-black font-semibold shadow-xs'
+                    : 'bg-[#131d2a] text-[#8fa0b2] border border-[#1e2c3c] hover:text-white hover:border-[#2a3c50]'
                 }`}
               >
-                {tier.toUpperCase()}
+                {tier}
               </button>
             );
           })}
         </div>
 
-        {/* Right side: Simple Sort Button with Popup */}
-        <div className="relative shrink-0" ref={sortMenuRef}>
-          <button
-            type="button"
-            onClick={() => setIsSortOpen((prev) => !prev)}
-            className="flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md border border-[#172535] bg-[#070d14] text-[#70879d] hover:text-white hover:border-[#28425b] text-[10px] sm:text-xs font-mono transition-colors cursor-pointer"
-            title="Sort drives"
-            aria-label="Sort options"
-          >
-            <ArrowUpDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#00ff66] shrink-0" />
-            <span className="text-white font-semibold text-[10px] sm:text-[11px] uppercase tracking-wider">
-              {currentSortOption.short}
-            </span>
-            <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#546b80] shrink-0" />
-          </button>
+        {/* Divider & Sort Button */}
+        <div className="flex items-center gap-2 shrink-0 ml-auto">
+          <div className="w-px h-5 bg-[#1b2737] shrink-0 hidden sm:block" />
 
-          {isSortOpen && (
-            <div className="absolute right-0 top-full mt-1.5 w-44 rounded-lg bg-[#0c1520] border border-[#1b2d3e] shadow-2xl py-1 z-50 font-mono text-xs divide-y divide-[#172535]">
-              {SORT_OPTIONS.map((opt) => {
-                const isSelected = sortByDate === opt.id;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => {
-                      onSortByDateChange(opt.id);
-                      setIsSortOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-1.5 flex items-center justify-between transition-colors cursor-pointer ${
-                      isSelected
-                        ? 'bg-[#00ff66]/10 text-[#00ff66] font-bold'
-                        : 'text-slate-300 hover:bg-[#070d14] hover:text-white'
-                    }`}
-                  >
-                    <span className="tracking-wider uppercase text-[11px]">{opt.label}</span>
-                    {isSelected && <Check className="w-3.5 h-3.5 text-[#00ff66] shrink-0" />}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          {/* Sort Selector Button */}
+          <div className="relative shrink-0" ref={sortMenuRef}>
+            <button
+              type="button"
+              onClick={() => setIsSortOpen((prev) => !prev)}
+              className="bg-[#131d2a] border border-[#1e2c3c] hover:border-[#2a3c50] text-white px-2.5 py-1 rounded-xl text-xs flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+              title="Change sort order"
+              aria-label="Sort options"
+            >
+              <ArrowUpDown className="w-3.5 h-3.5 text-[#22c55e] shrink-0" />
+              <span className="font-medium text-xs text-white">
+                {currentSortOption.short}
+              </span>
+              <ChevronDown className="w-3.5 h-3.5 text-[#70879d] shrink-0" />
+            </button>
+
+            {isSortOpen && (
+              <div className="absolute right-0 top-full mt-1.5 w-44 rounded-xl bg-[#0c141f] border border-[#1b2737] shadow-2xl py-1 z-50 text-xs divide-y divide-[#172332]">
+                {SORT_OPTIONS.map((opt) => {
+                  const isSelected = sortByDate === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        onSortByDateChange(opt.id);
+                        setIsSortOpen(false);
+                      }}
+                      className={`w-full text-left px-3.5 py-2 flex items-center justify-between transition-colors cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#22c55e]/15 text-[#22c55e] font-semibold'
+                          : 'text-slate-300 hover:bg-[#131d2a] hover:text-white'
+                      }`}
+                    >
+                      <span className="text-xs">{opt.label}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-[#22c55e] shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Row 2: Compact CTC Range Pills (full width, fits in 1 line without swiping) */}
-      <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-[#172535]">
-        <div className="flex items-center gap-1 w-full justify-between sm:justify-start">
-          <span className="text-[10px] text-[#546b80] uppercase tracking-wider mr-0.5 font-semibold shrink-0">
-            CTC:
-          </span>
+      {/* Row 2: CTC Range Pills (compact, spans neatly without scroll) */}
+      <div className="flex items-center gap-1.5 pt-0.5">
+        <span className="text-xs sm:text-sm text-[#70879d] font-medium mr-1 shrink-0">
+          CTC:
+        </span>
+        <div className="flex items-center gap-1.5 flex-1 justify-between sm:justify-start">
           {CTC_OPTIONS.map((opt) => {
             const isSelected = ctcFilter === opt.id;
             return (
@@ -163,10 +168,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 key={opt.id}
                 type="button"
                 onClick={() => onCtcFilterChange(opt.id)}
-                className={`flex-1 sm:flex-none text-center px-1.5 sm:px-2.5 py-0.5 rounded text-[10px] sm:text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer ${
+                className={`flex-1 sm:flex-none text-center px-2 py-1 rounded-xl text-xs font-medium transition-colors cursor-pointer ${
                   isSelected
-                    ? 'border border-[#00ff66] text-[#00ff66] bg-[#00ff66]/10 font-bold'
-                    : 'border border-[#172535] bg-[#070d14] text-[#70879d] hover:text-white'
+                    ? 'bg-[#22c55e] text-black font-semibold shadow-xs'
+                    : 'bg-[#131d2a] text-[#8fa0b2] border border-[#1e2c3c] hover:text-white hover:border-[#2a3c50]'
                 }`}
               >
                 {opt.label}

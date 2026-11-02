@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { RefreshCw, Search, X, MoreVertical } from 'lucide-react';
+import { RefreshCw, Search, X, Code2, Bell, Plus } from 'lucide-react';
 import { NavTab } from './MobileBottomNav';
 
 interface NavbarProps {
@@ -22,7 +22,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onTabChange,
 }) => {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -38,123 +37,115 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#142330] bg-[#070c12]/95 backdrop-blur-md font-mono select-none transition-colors">
+    <header className="sticky top-0 z-40 w-full border-b border-[#172332] bg-[#070c12]/95 backdrop-blur-md select-none transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-13 sm:h-14">
-          {/* Left: [>] PLACEMENT TRACKER 2026 */}
-          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <span className="text-[#00ff66] font-bold text-xs sm:text-sm tracking-wider shrink-0">
-              [&gt;]
-            </span>
-            <span className="font-bold text-xs sm:text-sm text-white tracking-wider whitespace-nowrap truncate">
-              PLACEMENT TRACKER 2026
-            </span>
+        <div className="flex items-center justify-between h-14 sm:h-16">
+          {/* Left: </> Placement Tracker 2026 (BMSCE*) */}
+          <div
+            className="flex items-center gap-2.5 min-w-0 cursor-pointer"
+            onClick={() => onTabChange?.('dashboard')}
+          >
+            <div className="w-8 h-8 rounded-xl bg-[#22c55e]/15 flex items-center justify-center shrink-0">
+              <Code2 className="w-5 h-5 text-[#22c55e]" />
+            </div>
+            <div className="min-w-0">
+              <span className="font-bold text-sm sm:text-base text-white tracking-tight whitespace-nowrap block leading-tight">
+                Placement Tracker 2026
+              </span>
+              <span className="text-[10px] text-[#70879d] tracking-wider block font-medium">
+                BMSCE*
+              </span>
+            </div>
           </div>
 
-          {/* Right: Search & Refresh [R] */}
+          {/* Right Action Icons: Search, Notifications Bell, Plus Button, Refresh */}
           <div className="flex items-center gap-2">
-            {/* Desktop Search Input with clean minimal styling */}
+            {/* Desktop Search Input */}
             <div className="hidden sm:flex items-center relative">
-              <div className="relative flex items-center">
-                <Search className="absolute left-2.5 w-3.5 h-3.5 text-[#546b80] pointer-events-none" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => onSearchChange?.(e.target.value)}
-                  placeholder="SEARCH..."
-                  className="w-40 md:w-52 pl-8 pr-7 py-1 rounded-md bg-[#0a1219] text-xs text-white placeholder-[#546b80] border border-[#142330] focus:outline-none focus:border-[#00ff66]/50 transition-colors uppercase tracking-wider cursor-text"
-                />
-                {search && (
-                  <button
-                    onClick={() => onSearchChange?.('')}
-                    className="absolute right-2 text-[#546b80] hover:text-white p-0.5 cursor-pointer"
-                    title="Clear search"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
+              <Search className="absolute left-2.5 w-3.5 h-3.5 text-[#546b80] pointer-events-none" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => onSearchChange?.(e.target.value)}
+                placeholder="Search..."
+                className="w-40 md:w-56 pl-8 pr-7 py-1.5 rounded-xl bg-[#0c141f] text-xs text-white placeholder-[#70879d] border border-[#1b2737] focus:outline-none focus:border-[#22c55e] transition-colors cursor-text"
+              />
+              {search && (
+                <button
+                  onClick={() => onSearchChange?.('')}
+                  className="absolute right-2 text-[#70879d] hover:text-white p-0.5 cursor-pointer"
+                  title="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
             {/* Mobile Search Toggle Button */}
             <button
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-              className="sm:hidden p-1.5 rounded-md border border-[#142330] bg-[#0a1219] text-[#70879d] hover:text-white transition-colors cursor-pointer"
+              className="sm:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-[#131d2a] transition-colors cursor-pointer"
               title="Search"
               aria-label="Toggle mobile search"
             >
-              <Search className="w-4 h-4" />
+              <Search className="w-5 h-5" />
             </button>
 
-            {/* Refresh Button [R] */}
+            {/* Refresh Data */}
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="px-2 py-1 rounded-md border border-[#142330] bg-[#0a1219] text-[#70879d] hover:text-white hover:border-[#1d354a] transition-colors text-xs font-semibold flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
+              className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-[#131d2a] transition-colors cursor-pointer disabled:cursor-not-allowed"
               title="Refresh Data"
+              aria-label="Refresh data"
             >
               <RefreshCw
-                className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-[#00ff66]' : ''}`}
+                className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-[#22c55e]' : ''}`}
               />
-              <span className="hidden sm:inline">[R]</span>
             </button>
 
-            {/* Mobile 3-Dots Menu Button */}
-            <div className="relative sm:hidden">
+            {/* Notification Bell with indicator */}
+            <div className="relative">
               <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-1.5 rounded-md border border-[#142330] bg-[#0a1219] text-[#70879d] hover:text-white transition-colors cursor-pointer"
-                title="Options"
-                aria-label="More options"
+                onClick={() => onTabChange?.('past')}
+                className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-[#131d2a] transition-colors cursor-pointer relative"
+                title="Notifications"
+                aria-label="Notifications"
               >
-                <MoreVertical className="w-4 h-4" />
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#22c55e] ring-2 ring-[#070c12]" />
               </button>
-
-              {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-44 rounded-md bg-[#0a1219] border border-[#142330] shadow-xl py-1 text-xs z-50 divide-y divide-[#142330]">
-                  <button
-                    onClick={() => {
-                      onTabChange?.('pipeline');
-                      setIsMenuOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 text-slate-300 hover:bg-[#0e1720] hover:text-white flex items-center justify-between cursor-pointer"
-                  >
-                    <span>View All Drives</span>
-                    <span className="text-[#00ff66]">&gt;</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      onTabChange?.('past');
-                      setIsMenuOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 text-slate-300 hover:bg-[#0e1720] hover:text-white flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Past Companies</span>
-                    <span className="text-slate-400">&gt;</span>
-                  </button>
-                </div>
-              )}
             </div>
+
+            {/* Green Plus Action Button */}
+            <button
+              onClick={() => onTabChange?.('notes')}
+              className="w-8 h-8 rounded-xl bg-[#22c55e] hover:bg-[#16a34a] text-black font-bold flex items-center justify-center transition-colors cursor-pointer shadow-xs ml-0.5"
+              title="Add Note / Pipeline"
+              aria-label="Add new"
+            >
+              <Plus className="w-5 h-5 stroke-[2.5]" />
+            </button>
           </div>
         </div>
 
         {/* Mobile Search Expandable Bar */}
         {isMobileSearchOpen && (
-          <div className="sm:hidden pb-2.5 pt-1 flex items-center gap-2">
+          <div className="sm:hidden pb-3 pt-1 flex items-center gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#546b80]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#546b80]" />
               <input
                 ref={searchInputRef}
                 type="text"
                 value={search}
                 onChange={(e) => onSearchChange?.(e.target.value)}
-                placeholder="SEARCH COMPANIES, ROLES..."
-                className="w-full pl-8 pr-8 py-1.5 rounded-md bg-[#0a1219] text-xs text-white placeholder-[#546b80] border border-[#142330] focus:outline-none focus:border-[#00ff66]/60 uppercase tracking-wider cursor-text"
+                placeholder="Search companies, roles..."
+                className="w-full pl-9 pr-8 py-2 rounded-xl bg-[#0c141f] text-xs text-white placeholder-[#70879d] border border-[#1b2737] focus:outline-none focus:border-[#22c55e] cursor-text"
               />
               {search && (
                 <button
                   onClick={() => onSearchChange?.('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#546b80] p-0.5 cursor-pointer"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#70879d] p-0.5 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -162,14 +153,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <button
               onClick={() => setIsMobileSearchOpen(false)}
-              className="text-xs text-[#70879d] hover:text-white px-2 py-1 cursor-pointer"
+              className="text-xs text-[#70879d] hover:text-white px-2 py-1 font-medium cursor-pointer"
             >
-              CANCEL
+              Cancel
             </button>
           </div>
         )}
-
-
       </div>
     </header>
   );
