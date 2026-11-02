@@ -16,8 +16,8 @@ interface FilterBarProps {
   onCtcFilterChange: (val: CtcFilterOption) => void;
   sortByDate: DateSortOption;
   onSortByDateChange: (val: DateSortOption) => void;
-  totalFiltered: number;
-  onReset: () => void;
+  totalFiltered?: number;
+  onReset?: () => void;
   isFiltered?: boolean;
   // Optional / backwards compatibility props
   search?: string;
@@ -54,8 +54,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onCtcFilterChange,
   sortByDate,
   onSortByDateChange,
-  onReset,
-  search = '',
 }) => {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const sortMenuRef = useRef<HTMLDivElement>(null);
@@ -80,15 +78,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   const currentSortOption =
     SORT_OPTIONS.find((opt) => opt.id === sortByDate) || SORT_OPTIONS[0];
 
-  const hasActiveFilter =
-    Boolean(search && search.trim() !== '') ||
-    selectedTier !== 'All' ||
-    ctcFilter !== 'all' ||
-    sortByDate !== 'deadline-asc';
-
   return (
     <div className="bg-[#0c1520] border border-[#1b2d3e] rounded-xl p-3 sm:p-3.5 mb-4 space-y-2 font-mono transition-colors shadow-md shadow-black/30">
-      {/* Row 1: Tiers on left, Sort button on right — strictly on ONE line */}
+      {/* Row 1: Tiers on left, Sort button on right — clean, fixed, no reset button */}
       <div className="flex items-center justify-between gap-1.5">
         {/* Tier Filters: ALL · TIER 1 · TIER 2 */}
         <div className="flex items-center gap-1 shrink-0">
@@ -114,60 +106,47 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           })}
         </div>
 
-        {/* Right side: RESET (when active) + Sort Button */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {hasActiveFilter && (
-            <button
-              type="button"
-              onClick={onReset}
-              className="text-[#ef4444] hover:underline uppercase tracking-wider cursor-pointer font-bold text-[10px] px-1"
-            >
-              RESET
-            </button>
+        {/* Right side: Simple Sort Button with Popup */}
+        <div className="relative shrink-0" ref={sortMenuRef}>
+          <button
+            type="button"
+            onClick={() => setIsSortOpen((prev) => !prev)}
+            className="flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md border border-[#172535] bg-[#070d14] text-[#70879d] hover:text-white hover:border-[#28425b] text-[10px] sm:text-xs font-mono transition-colors cursor-pointer"
+            title="Sort drives"
+            aria-label="Sort options"
+          >
+            <ArrowUpDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#00ff66] shrink-0" />
+            <span className="text-white font-semibold text-[10px] sm:text-[11px] uppercase tracking-wider">
+              {currentSortOption.short}
+            </span>
+            <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#546b80] shrink-0" />
+          </button>
+
+          {isSortOpen && (
+            <div className="absolute right-0 top-full mt-1.5 w-44 rounded-lg bg-[#0c1520] border border-[#1b2d3e] shadow-2xl py-1 z-50 font-mono text-xs divide-y divide-[#172535]">
+              {SORT_OPTIONS.map((opt) => {
+                const isSelected = sortByDate === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => {
+                      onSortByDateChange(opt.id);
+                      setIsSortOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 flex items-center justify-between transition-colors cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#00ff66]/10 text-[#00ff66] font-bold'
+                        : 'text-slate-300 hover:bg-[#070d14] hover:text-white'
+                    }`}
+                  >
+                    <span className="tracking-wider uppercase text-[11px]">{opt.label}</span>
+                    {isSelected && <Check className="w-3.5 h-3.5 text-[#00ff66] shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
           )}
-
-          {/* Simple Sort Button with Popup */}
-          <div className="relative shrink-0" ref={sortMenuRef}>
-            <button
-              type="button"
-              onClick={() => setIsSortOpen((prev) => !prev)}
-              className="flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md border border-[#172535] bg-[#070d14] text-[#70879d] hover:text-white hover:border-[#28425b] text-[10px] sm:text-xs font-mono transition-colors cursor-pointer"
-              title="Sort drives"
-              aria-label="Sort options"
-            >
-              <ArrowUpDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#00ff66] shrink-0" />
-              <span className="text-white font-semibold text-[10px] sm:text-[11px] uppercase tracking-wider">
-                {currentSortOption.short}
-              </span>
-              <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#546b80] shrink-0" />
-            </button>
-
-            {isSortOpen && (
-              <div className="absolute right-0 top-full mt-1.5 w-44 rounded-lg bg-[#0c1520] border border-[#1b2d3e] shadow-2xl py-1 z-50 font-mono text-xs divide-y divide-[#172535]">
-                {SORT_OPTIONS.map((opt) => {
-                  const isSelected = sortByDate === opt.id;
-                  return (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => {
-                        onSortByDateChange(opt.id);
-                        setIsSortOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 flex items-center justify-between transition-colors cursor-pointer ${
-                        isSelected
-                          ? 'bg-[#00ff66]/10 text-[#00ff66] font-bold'
-                          : 'text-slate-300 hover:bg-[#070d14] hover:text-white'
-                      }`}
-                    >
-                      <span className="tracking-wider uppercase text-[11px]">{opt.label}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-[#00ff66] shrink-0" />}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
