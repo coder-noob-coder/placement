@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { PlacementDrive } from '@/lib/db';
-import { Clock, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { CompanyLogo } from './CompanyLogo';
 
 interface ActivityItem {
@@ -215,15 +215,8 @@ export const UpcomingActivities: React.FC<{
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between gap-2 mt-0.5 text-xs text-[#70879d]">
-                        <span className="truncate text-xs text-[#8fa0b2]">
-                          {act.role || 'Job Profile'}
-                        </span>
-
-                        <div className="flex items-center gap-1 text-[11px] text-[#70879d] shrink-0">
-                          <Clock className="w-3 h-3 text-[#70879d] shrink-0" />
-                          <span>{activeTab === 'today' ? 'Today' : 'Tomorrow'}</span>
-                        </div>
+                      <div className="mt-0.5 text-xs text-[#8fa0b2] truncate">
+                        {act.role || 'Job Profile'}
                       </div>
                     </div>
                   </div>
