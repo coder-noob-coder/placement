@@ -77,12 +77,12 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({ drive, onSelect, isPas
 
         {/* Company Identity & Role */}
         <div className="flex items-start gap-3 mb-3">
-          <div className="w-9 h-9 rounded-md border border-[#142330] bg-[#070c12] text-white flex items-center justify-center font-bold text-xs shrink-0 group-hover:border-[#00ff66]/50 transition-colors">
+          <div className="w-9 h-9 rounded-md border border-[#142330] bg-[#070c12] text-white flex items-center justify-center font-bold text-xs shrink-0 group-hover:border-[#1d354a] transition-colors">
             {getCompanyInitials(drive.company)}
           </div>
 
           <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-white text-sm sm:text-base leading-snug truncate group-hover:text-[#00ff66] transition-colors">
+            <h3 className="font-bold text-white text-sm sm:text-base leading-snug truncate group-hover:text-slate-100 transition-colors">
               {drive.company}
             </h3>
             <p className="text-xs text-[#70879d] mt-0.5 line-clamp-1">{drive.role}</p>
@@ -93,7 +93,7 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({ drive, onSelect, isPas
         <div className="py-2 px-2.5 rounded bg-[#070c12] border border-[#142330] mb-3 flex items-center justify-between text-xs">
           <div>
             <span className="text-[10px] uppercase text-[#546b80] block">PACKAGE</span>
-            <span className="font-bold text-[#00ff66] block mt-0.5">{drive.ctc}</span>
+            <span className="font-bold text-white block mt-0.5">{drive.ctc}</span>
           </div>
           {drive.stipend && (
             <div className="text-right">
@@ -139,7 +139,7 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({ drive, onSelect, isPas
           </span>
         </div>
 
-        <span className="text-[11px] text-[#546b80] group-hover:text-[#00ff66] transition-colors flex items-center gap-0.5">
+        <span className="text-[11px] text-[#546b80] group-hover:text-white transition-colors flex items-center gap-0.5">
           <span>DETAILS</span>
           <span>&gt;</span>
         </span>

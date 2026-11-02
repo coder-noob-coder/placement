@@ -410,7 +410,7 @@ export default function PlacementTrackerPage() {
               <div className="bg-[#0a1219] border border-[#142330] hover:border-[#1d354a] rounded-lg px-3 py-2 flex items-center gap-2 text-xs font-mono transition-colors select-none">
                 <Info className="w-3.5 h-3.5 text-[#fbbf24] shrink-0" />
                 <span className="text-[#fbbf24] font-bold text-[10px] tracking-wider uppercase shrink-0">
-                  [ NOTE ]
+                  NOTE
                 </span>
                 <span className="text-slate-300 text-xs tracking-wide">
                   Data before mid-Sept is not complete.
@@ -436,7 +436,7 @@ export default function PlacementTrackerPage() {
                   </h2>
                 </div>
                 <span className="text-xs text-[#546b80]">
-                  [ {drives.filter((d) => d.oaDate || d.interviewDate).length} EVENTS ]
+                  {drives.filter((d) => d.oaDate || d.interviewDate).length} EVENTS
                 </span>
               </div>
 
@@ -486,7 +486,7 @@ export default function PlacementTrackerPage() {
                   </h2>
                 </div>
                 <span className="text-xs text-[#546b80]">
-                  [ {drives.filter(isInterviewOver).length} CONCLUDED ]
+                  {drives.filter(isInterviewOver).length} CONCLUDED
                 </span>
               </div>
               <p className="text-[11px] text-[#70879d]">
@@ -507,7 +507,7 @@ export default function PlacementTrackerPage() {
             <section id="placements-content" className="pt-1">
               <div className="flex items-center justify-between mb-2.5 px-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[#00ff66] font-bold text-xs">[&gt;]</span>
+                  <span className="text-slate-400 font-bold text-xs">&gt;</span>
                   <h2 className="text-xs font-bold text-white uppercase tracking-wider">
                     {activeTab === 'past'
                       ? 'Concluded & Past Recruitment Drives'
