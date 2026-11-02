@@ -153,11 +153,11 @@ export const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({ drive, o
             <span className="text-[10px] text-[#70879d] font-medium uppercase tracking-wider block mb-1.5">
               Eligible Branches ({drive.eligibleBranches.length})
             </span>
-            <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto scrollbar-none">
+            <div className="flex flex-wrap gap-1.5">
               {drive.eligibleBranches.map((branch, idx) => (
                 <span
                   key={`${branch}_${idx}`}
-                  className="px-2 py-0.5 rounded-lg bg-[#0c141f] border border-[#1b2737] text-[11px] text-slate-300 shrink-0 font-medium"
+                  className="px-2 py-0.5 rounded-lg bg-[#0c141f] border border-[#1b2737] text-[11px] text-slate-300 font-medium"
                 >
                   {branch}
                 </span>
