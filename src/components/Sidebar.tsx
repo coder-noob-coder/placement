@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Home, History, StickyNote, BarChart2, Briefcase, Clock, Users } from 'lucide-react';
 import { NavTab } from './MobileBottomNav';
 
 interface SidebarProps {
@@ -11,46 +11,44 @@ interface SidebarProps {
 
 interface NavItem {
   id: NavTab;
-  index: string;
   label: string;
+  icon: React.ElementType;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'dashboard', index: '[01]', label: 'DASHBOARD' },
-  { id: 'pipeline', index: '[02]', label: 'PIPELINE' },
-  { id: 'applications', index: '[03]', label: 'APPLICATIONS' },
-  { id: 'interviews', index: '[04]', label: 'INTERVIEWS' },
-  { id: 'calendar', index: '[05]', label: 'CALENDAR' },
-  { id: 'notes', index: '[06]', label: 'NOTES' },
-  { id: 'analytics', index: '[07]', label: 'ANALYTICS' },
-  { id: 'past', index: '[08]', label: 'PAST DRIVES' },
+  { id: 'dashboard', label: 'Home', icon: Home },
+  { id: 'past', label: 'Past Drives', icon: History },
+  { id: 'notes', label: 'Notes', icon: StickyNote },
+  { id: 'analytics', label: 'Stats', icon: BarChart2 },
+  { id: 'interviews', label: 'Interviews', icon: Clock },
+  { id: 'applications', label: 'Applications', icon: Users },
+  { id: 'pipeline', label: 'Pipeline', icon: Briefcase },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
   return (
-    <aside className="hidden md:flex flex-col w-48 lg:w-52 shrink-0 font-mono py-1 select-none">
+    <aside className="hidden md:flex flex-col w-48 lg:w-52 shrink-0 py-1 select-none">
       <nav className="space-y-1">
         {NAV_ITEMS.map((item) => {
           const isActive = activeTab === item.id;
+          const Icon = item.icon;
           return (
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs tracking-wider transition-all text-left cursor-pointer ${
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all text-left cursor-pointer ${
                 isActive
-                  ? 'border border-[#00ff66]/50 bg-[#00ff66]/5 text-[#00ff66] font-semibold'
-                  : 'text-[#61788d] hover:text-slate-200 hover:bg-[#0a1219] border border-transparent'
+                  ? 'bg-[#22c55e]/15 text-[#22c55e] font-semibold border border-[#22c55e]/30'
+                  : 'text-[#8fa0b2] hover:text-white hover:bg-[#131d2a] border border-transparent'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <span className={isActive ? 'text-[#00ff66]' : 'text-[#415568]'}>
-                  {item.index}
-                </span>
+              <div className="flex items-center gap-2.5">
+                <Icon className={`w-4 h-4 ${isActive ? 'text-[#22c55e]' : 'text-[#70879d]'}`} />
                 <span>{item.label}</span>
               </div>
 
               {isActive && (
-                <ChevronRight className="w-3.5 h-3.5 text-[#00ff66]" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#22c55e]" />
               )}
             </button>
           );

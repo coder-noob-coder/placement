@@ -38,18 +38,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-[#172332] bg-[#070c12]/95 backdrop-blur-md select-none transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 sm:h-16">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
           {/* Left: </> Placement Tracker 2026 (BMSCE*) */}
           <div
-            className="flex items-center gap-2.5 min-w-0 cursor-pointer"
+            className="flex items-center gap-2 min-w-0 flex-1 cursor-pointer"
             onClick={() => onTabChange?.('dashboard')}
           >
             <div className="w-8 h-8 rounded-xl bg-[#22c55e]/15 flex items-center justify-center shrink-0">
-              <Code2 className="w-5 h-5 text-[#22c55e]" />
+              <Code2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#22c55e]" />
             </div>
             <div className="min-w-0">
-              <span className="font-bold text-sm sm:text-base text-white tracking-tight whitespace-nowrap block leading-tight">
+              <span className="font-bold text-xs sm:text-base text-white tracking-tight truncate block leading-tight">
                 Placement Tracker 2026
               </span>
               <span className="text-[10px] text-[#70879d] tracking-wider block font-medium">
@@ -59,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right Action Icons: Search, Notifications Bell, Plus Button, Refresh */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Desktop Search Input */}
             <div className="hidden sm:flex items-center relative">
               <Search className="absolute left-2.5 w-3.5 h-3.5 text-[#546b80] pointer-events-none" />
@@ -84,18 +84,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Search Toggle Button */}
             <button
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-              className="sm:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-[#131d2a] transition-colors cursor-pointer"
+              className="sm:hidden p-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#131d2a] transition-colors cursor-pointer"
               title="Search"
               aria-label="Toggle mobile search"
             >
               <Search className="w-5 h-5" />
             </button>
 
-            {/* Refresh Data */}
+            {/* Refresh Data (Desktop & Tablet) */}
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-[#131d2a] transition-colors cursor-pointer disabled:cursor-not-allowed"
+              className="hidden sm:flex p-2 rounded-xl text-slate-300 hover:text-white hover:bg-[#131d2a] transition-colors cursor-pointer disabled:cursor-not-allowed"
               title="Refresh Data"
               aria-label="Refresh data"
             >
@@ -105,26 +105,24 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             {/* Notification Bell with indicator */}
-            <div className="relative">
-              <button
-                onClick={() => onTabChange?.('past')}
-                className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-[#131d2a] transition-colors cursor-pointer relative"
-                title="Notifications"
-                aria-label="Notifications"
-              >
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#22c55e] ring-2 ring-[#070c12]" />
-              </button>
-            </div>
+            <button
+              onClick={() => onTabChange?.('past')}
+              className="p-1.5 sm:p-2 rounded-xl text-slate-300 hover:text-white hover:bg-[#131d2a] transition-colors cursor-pointer relative"
+              title="Notifications"
+              aria-label="Notifications"
+            >
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-1 sm:top-1.5 right-1 sm:right-1.5 w-2 h-2 rounded-full bg-[#22c55e] ring-2 ring-[#070c12]" />
+            </button>
 
             {/* Green Plus Action Button */}
             <button
               onClick={() => onTabChange?.('notes')}
-              className="w-8 h-8 rounded-xl bg-[#22c55e] hover:bg-[#16a34a] text-black font-bold flex items-center justify-center transition-colors cursor-pointer shadow-xs ml-0.5"
-              title="Add Note / Pipeline"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#22c55e] hover:bg-[#16a34a] text-black font-bold flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+              title="Add Note"
               aria-label="Add new"
             >
-              <Plus className="w-5 h-5 stroke-[2.5]" />
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
             </button>
           </div>
         </div>

@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { PlacementDrive } from '@/lib/db';
 import { Clock, ChevronRight } from 'lucide-react';
+import { CompanyLogo } from './CompanyLogo';
 
 interface ActivityItem {
   id: string;
@@ -105,12 +106,6 @@ export const UpcomingActivities: React.FC<{
       }
     });
 
-    list.sort((a, b) => {
-      if (!a.dateObj) return 1;
-      if (!b.dateObj) return -1;
-      return a.dateObj.getTime() - b.dateObj.getTime();
-    });
-
     return list;
   }, [drives]);
 
@@ -122,192 +117,125 @@ export const UpcomingActivities: React.FC<{
     return allActivities.filter((a) => a.isTomorrow);
   }, [allActivities]);
 
-  const now = new Date();
-  const todayDateFormatted = now
-    .toLocaleDateString('en-GB', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-    })
-    .toUpperCase();
-
-  const tomorrowDate = new Date();
-  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-  const tomorrowDateFormatted = tomorrowDate
-    .toLocaleDateString('en-GB', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-    })
-    .toUpperCase();
-
   const currentActivities = activeTab === 'today' ? todayActivities : tomorrowActivities;
-  const currentDateFormatted = activeTab === 'today' ? todayDateFormatted : tomorrowDateFormatted;
 
-  const getCompanyInitials = (name: string) => {
-    const clean = name.replace(/[^a-zA-Z]/g, ' ').trim();
-    const parts = clean.split(/\s+/).filter(Boolean);
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
+  const currentDateFormatted = useMemo(() => {
+    const d = new Date();
+    if (activeTab === 'tomorrow') {
+      d.setDate(d.getDate() + 1);
     }
-    return name.slice(0, 2).toUpperCase();
-  };
+    return d.toLocaleDateString('en-IN', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    });
+  }, [activeTab]);
 
   return (
-    <section className="bg-[#0c1520] border border-[#1b2d3e] rounded-xl p-4 sm:p-5 font-mono shadow-md shadow-black/30 transition-colors">
+    <section className="bg-[#0c141f] border border-[#1b2737] rounded-2xl p-4 sm:p-5 shadow-sm shadow-black/20 space-y-3.5 transition-colors select-none">
       {/* Header Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#142330]">
-        <div className="flex items-start sm:items-center gap-3">
-          {/* Retro terminal list icon */}
-          <div className="w-8 h-8 rounded-md bg-[#070c12] border border-[#142330] flex items-center justify-center shrink-0 text-slate-300">
-            <svg
-              className="w-4 h-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="8" y1="6" x2="21" y2="6" />
-              <line x1="8" y1="12" x2="21" y2="12" />
-              <line x1="8" y1="18" x2="21" y2="18" />
-              <line x1="3" y1="6" x2="3.01" y2="6" />
-              <line x1="3" y1="12" x2="3.01" y2="12" />
-              <line x1="3" y1="18" x2="3.01" y2="18" />
-            </svg>
-          </div>
-
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm sm:text-base font-bold text-white tracking-wider uppercase">
-                Daily Action Agenda
-              </h2>
-              {/* Mobile count badge */}
-              <span className="sm:hidden text-xs font-bold px-2 py-0.5 rounded border border-[#00ff66]/40 text-[#00ff66] bg-[#00ff66]/10">
-                [ {todayActivities.length} ]
-              </span>
-            </div>
-            <p className="text-xs text-[#61788d] mt-0.5 tracking-tight">
-              Scheduled assessments &amp; interviews.
-            </p>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#172332]">
+        <div>
+          <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+            Daily Action Agenda
+          </h2>
+          <p className="text-xs text-[#70879d] mt-0.5 font-normal">
+            Scheduled assessments &amp; interviews
+          </p>
         </div>
 
         {/* Tab Controls: TODAY and TOMORROW */}
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex items-center gap-1.5 self-start sm:self-auto">
           <button
+            type="button"
             onClick={() => setActiveTab('today')}
-            className={`px-3 py-1 rounded text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+            className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer ${
               activeTab === 'today'
-                ? 'border border-[#00ff66] text-[#00ff66] bg-[#00ff66]/10 font-bold'
-                : 'border border-[#142330] text-[#61788d] hover:text-slate-200'
+                ? 'bg-[#22c55e] text-black font-semibold shadow-xs'
+                : 'bg-[#131d2a] text-[#8fa0b2] border border-[#1e2c3c] hover:text-white'
             }`}
           >
-            [ TODAY ({todayActivities.length}) ]
+            Today ({todayActivities.length})
           </button>
 
           <button
+            type="button"
             onClick={() => setActiveTab('tomorrow')}
-            className={`px-3 py-1 rounded text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+            className={`px-3 py-1 rounded-xl text-xs font-medium transition-all cursor-pointer ${
               activeTab === 'tomorrow'
-                ? 'border border-[#00ff66] text-[#00ff66] bg-[#00ff66]/10 font-bold'
-                : 'border border-[#142330] text-[#61788d] hover:text-slate-200'
+                ? 'bg-[#22c55e] text-black font-semibold shadow-xs'
+                : 'bg-[#131d2a] text-[#8fa0b2] border border-[#1e2c3c] hover:text-white'
             }`}
           >
-            TOMORROW ({tomorrowActivities.length})
+            Tomorrow ({tomorrowActivities.length})
           </button>
         </div>
       </div>
 
       {/* Subheader: Lineup & Date */}
-      <div className="pt-3 pb-1">
-        <div className="flex items-center justify-between text-xs text-[#61788d] uppercase tracking-widest pb-2.5 border-b border-[#142330]">
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-xs text-[#70879d] font-medium pb-2 border-b border-[#172332]">
           <span className="font-semibold text-slate-300">
-            {activeTab === 'today' ? "TODAY'S LINEUP" : "TOMORROW'S LINEUP"}
+            {activeTab === 'today' ? "Today's Lineup" : "Tomorrow's Lineup"}
           </span>
-          <span className="font-mono text-[#61788d]">
-            {currentDateFormatted}
-          </span>
+          <span>{currentDateFormatted}</span>
         </div>
 
         {/* List of Lineup items */}
         {currentActivities.length > 0 ? (
-          <div className="divide-y divide-dashed divide-[#142330]">
-            {currentActivities.map((act, index) => {
-              const itemNumber = `[${String(index + 1).padStart(2, '0')}]`;
-              const initials = getCompanyInitials(act.displayCompany);
+          <div className="divide-y divide-[#172332]">
+            {currentActivities.map((act) => {
               const isInterview = act.type === 'Interview';
 
               return (
                 <div
                   key={act.id}
-                  onClick={() => {
-                    if (onSelectCompany) {
-                      onSelectCompany(act.company);
-                    }
-                  }}
-                  className="py-3 flex items-center justify-between gap-3 group hover:bg-[#0e1720]/80 px-2 rounded-md transition-colors cursor-pointer"
+                  onClick={() => onSelectCompany?.(act.company)}
+                  className="py-3 flex items-center justify-between gap-3 group hover:bg-[#131d2a]/60 px-2 rounded-xl transition-colors cursor-pointer"
                   title="Click to view full details"
                 >
-                  {/* Left: Number (desktop only) + Avatar + Company Info */}
-                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-                    <span className="hidden sm:inline-block text-xs sm:text-sm text-[#546b80] font-mono shrink-0 w-8">
-                      {itemNumber}
-                    </span>
+                  {/* Left: Logo + Company Info */}
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <CompanyLogo company={act.company} size="sm" />
 
-                    {/* Badge / Avatar */}
-                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-md border border-[#142330] bg-[#070c12] text-slate-100 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 group-hover:border-[#00ff66]/60 transition-colors">
-                      {initials}
-                    </div>
-
-                    {/* Text Details & Badges */}
                     <div className="min-w-0 flex-1">
-                      {/* Row 1: Company + Type Badge */}
-                      <div className="flex items-center justify-between gap-1.5">
-                        <span className="font-bold text-xs sm:text-sm md:text-base text-white truncate tracking-wide group-hover:text-[#00ff66] transition-colors">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold text-sm sm:text-base text-white truncate group-hover:text-[#22c55e] transition-colors">
                           {act.displayCompany}
                         </span>
 
                         <span
-                          className={`text-[9px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 rounded font-mono font-semibold tracking-wider shrink-0 ${
+                          className={`text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-medium shrink-0 ${
                             isInterview
-                              ? 'border border-sky-500/50 text-sky-400 bg-sky-950/20'
+                              ? 'border border-purple-500/50 text-purple-400 bg-purple-950/20'
                               : 'border border-emerald-500/50 text-emerald-400 bg-emerald-950/20'
                           }`}
                         >
-                          [ {isInterview ? 'INTERVIEW' : 'OA'} ]
+                          {isInterview ? 'Interview' : 'OA'}
                         </span>
                       </div>
 
-                      {/* Row 2: Role + Schedule Date */}
                       <div className="flex items-center justify-between gap-2 mt-0.5 text-xs text-[#70879d]">
-                        <span className="truncate text-[11px] sm:text-xs">
-                          {act.role}
+                        <span className="truncate text-xs text-[#8fa0b2]">
+                          {act.role || 'Job Profile'}
                         </span>
 
-                        <div className="flex items-center gap-1 text-[10px] sm:text-xs text-[#546b80] shrink-0">
-                          <Clock className="w-3 h-3 text-[#546b80] shrink-0" />
-                          <span className="uppercase tracking-wider">
-                            <span className="sm:hidden">{activeTab === 'today' ? 'TODAY' : 'TOMORROW'}</span>
-                            <span className="hidden sm:inline">{act.dateStr} &bull; {activeTab === 'today' ? 'TODAY' : 'TOMORROW'}</span>
-                          </span>
+                        <div className="flex items-center gap-1 text-[11px] text-[#70879d] shrink-0">
+                          <Clock className="w-3 h-3 text-[#70879d] shrink-0" />
+                          <span>{activeTab === 'today' ? 'Today' : 'Tomorrow'}</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Right: Chevron */}
-                  <div className="hidden sm:flex items-center pl-1 shrink-0">
-                    <ChevronRight className="w-4 h-4 text-[#546b80] group-hover:text-[#00ff66] transition-all" />
-                  </div>
+                  <ChevronRight className="w-4 h-4 text-[#70879d] group-hover:text-white transition-all shrink-0 ml-1" />
                 </div>
               );
             })}
           </div>
         ) : (
-          <div className="py-8 text-center text-xs text-[#546b80] tracking-wider">
-            [ NO ACTIVITIES SCHEDULED FOR {activeTab.toUpperCase()} ]
+          <div className="py-8 text-center text-xs text-[#70879d]">
+            No activities scheduled for {activeTab}
           </div>
         )}
       </div>

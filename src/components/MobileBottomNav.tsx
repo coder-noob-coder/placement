@@ -1,14 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Home, History, StickyNote, Calendar, BarChart2 } from 'lucide-react';
+import { Home, History, StickyNote, BarChart2 } from 'lucide-react';
 
 export type NavTab =
   | 'dashboard'
   | 'pipeline'
   | 'applications'
   | 'interviews'
-  | 'calendar'
   | 'notes'
   | 'analytics'
   | 'past';
@@ -25,15 +24,14 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   const isHome = activeTab === 'dashboard' || activeTab === 'pipeline';
   const isPast = activeTab === 'past';
   const isNotes = activeTab === 'notes';
-  const isCalendar = activeTab === 'calendar';
   const isStats = activeTab === 'analytics';
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#070c12]/95 backdrop-blur-md border-t border-[#172332] px-3 py-1.5 flex items-center justify-around select-none">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#070c12]/95 backdrop-blur-md border-t border-[#172332] px-4 py-2 flex items-center justify-around select-none">
       {/* 1. HOME */}
       <button
         onClick={() => onTabChange('dashboard')}
-        className="flex flex-col items-center justify-center py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
+        className="flex flex-col items-center justify-center py-1 px-3 transition-colors relative min-w-[58px] cursor-pointer"
       >
         <Home className={`w-5 h-5 ${isHome ? 'text-[#22c55e]' : 'text-slate-400'}`} />
         <span
@@ -51,7 +49,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       {/* 2. PAST */}
       <button
         onClick={() => onTabChange('past')}
-        className="flex flex-col items-center justify-center py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
+        className="flex flex-col items-center justify-center py-1 px-3 transition-colors relative min-w-[58px] cursor-pointer"
       >
         <History
           className={`w-5 h-5 ${isPast ? 'text-[#22c55e]' : 'text-slate-400'}`}
@@ -71,7 +69,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       {/* 3. NOTES */}
       <button
         onClick={() => onTabChange('notes')}
-        className="flex flex-col items-center justify-center py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
+        className="flex flex-col items-center justify-center py-1 px-3 transition-colors relative min-w-[58px] cursor-pointer"
       >
         <StickyNote
           className={`w-5 h-5 ${isNotes ? 'text-[#22c55e]' : 'text-slate-400'}`}
@@ -88,30 +86,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         )}
       </button>
 
-      {/* 4. CALENDAR */}
-      <button
-        onClick={() => onTabChange('calendar')}
-        className="flex flex-col items-center justify-center py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
-      >
-        <Calendar
-          className={`w-5 h-5 ${isCalendar ? 'text-[#22c55e]' : 'text-slate-400'}`}
-        />
-        <span
-          className={`text-[11px] font-medium mt-1 transition-colors ${
-            isCalendar ? 'text-white font-semibold' : 'text-[#70879d]'
-          }`}
-        >
-          Calendar
-        </span>
-        {isCalendar && (
-          <div className="w-6 h-0.5 bg-[#22c55e] rounded-full mt-1" />
-        )}
-      </button>
-
-      {/* 5. STATS */}
+      {/* 4. STATS */}
       <button
         onClick={() => onTabChange('analytics')}
-        className="flex flex-col items-center justify-center py-1 px-2.5 transition-colors relative min-w-[54px] cursor-pointer"
+        className="flex flex-col items-center justify-center py-1 px-3 transition-colors relative min-w-[58px] cursor-pointer"
       >
         <BarChart2
           className={`w-5 h-5 ${isStats ? 'text-[#22c55e]' : 'text-slate-400'}`}

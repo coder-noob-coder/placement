@@ -19,101 +19,91 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
   onSelectMetric,
 }) => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-2.5 font-mono select-none">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 select-none">
       {/* Card 1: Total Pipeline */}
       <div
         onClick={() => onSelectMetric?.('all')}
-        className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] hover:bg-[#0f1a28] shadow-sm shadow-black/20 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
+        className="bg-[#0c141f] border border-[#1b2737] hover:border-[#2a3c50] rounded-2xl p-3 sm:p-3.5 flex items-center justify-between transition-all cursor-pointer group shadow-sm shadow-black/20"
         title="View Total Pipeline"
       >
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <FileSpreadsheet className="w-3.5 h-3.5 text-[#00ff66] shrink-0" />
-          <span className="text-[10px] sm:text-[11px] font-semibold text-[#748ba0] tracking-wider uppercase truncate">
-            <span className="sm:hidden">TOTAL</span>
-            <span className="hidden sm:inline">TOTAL PIPELINE</span>
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-[#22c55e]/15 flex items-center justify-center shrink-0">
+            <FileSpreadsheet className="w-4 h-4 text-[#22c55e]" />
+          </div>
+          <span className="text-xs font-medium text-[#70879d] tracking-normal truncate">
+            <span className="sm:hidden">Total</span>
+            <span className="hidden sm:inline">Total Pipeline</span>
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <span className="text-sm sm:text-base md:text-lg font-extrabold text-[#00ff66]">
-            {total}
-          </span>
-          <span className="hidden sm:inline text-[10px] text-[#546b80] group-hover:text-[#00ff66] transition-colors tracking-widest">
-            &gt;&gt;&gt;
-          </span>
-        </div>
+        <span className="text-base sm:text-xl font-bold text-[#22c55e] shrink-0">
+          {total}
+        </span>
       </div>
 
       {/* Card 2: Today's Events */}
       <div
         onClick={() => onSelectMetric?.('todayEvents')}
-        className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] hover:bg-[#0f1a28] shadow-sm shadow-black/20 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
+        className="bg-[#0c141f] border border-[#1b2737] hover:border-[#2a3c50] rounded-2xl p-3 sm:p-3.5 flex items-center justify-between transition-all cursor-pointer group shadow-sm shadow-black/20"
         title="View Today's Scheduled Events"
       >
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <Calendar className="w-3.5 h-3.5 text-slate-300 shrink-0" />
-          <span className="text-[10px] sm:text-[11px] font-semibold text-[#748ba0] tracking-wider uppercase truncate">
-            <span className="sm:hidden">TODAY</span>
-            <span className="hidden sm:inline">TODAY&apos;S EVENTS</span>
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-[#131d2a] flex items-center justify-center shrink-0">
+            <Calendar className="w-4 h-4 text-slate-300" />
+          </div>
+          <span className="text-xs font-medium text-[#70879d] tracking-normal truncate">
+            <span className="sm:hidden">Today</span>
+            <span className="hidden sm:inline">Today&apos;s Events</span>
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <span className="text-sm sm:text-base md:text-lg font-extrabold text-white">
-            {todayEvents}
-          </span>
-          <span className="hidden sm:inline text-[10px] text-[#546b80] group-hover:text-white transition-colors tracking-widest">
-            &gt;&gt;&gt;
-          </span>
-        </div>
+        <span className="text-base sm:text-xl font-bold text-white shrink-0">
+          {todayEvents}
+        </span>
       </div>
 
       {/* Card 3: Tomorrow */}
       <div
         onClick={() => onSelectMetric?.('tomorrow')}
-        className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] hover:bg-[#0f1a28] shadow-sm shadow-black/20 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
+        className="bg-[#0c141f] border border-[#1b2737] hover:border-[#2a3c50] rounded-2xl p-3 sm:p-3.5 flex items-center justify-between transition-all cursor-pointer group shadow-sm shadow-black/20"
         title="View Tomorrow's Events"
       >
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <Calendar className="w-3.5 h-3.5 text-[#fbbf24] shrink-0" />
-          <span className="text-[10px] sm:text-[11px] font-semibold text-[#748ba0] tracking-wider uppercase truncate">
-            TOMORROW
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-[#131d2a] flex items-center justify-center shrink-0">
+            <Calendar className="w-4 h-4 text-[#fbbf24]" />
+          </div>
+          <span className="text-xs font-medium text-[#70879d] tracking-normal truncate">
+            Tomorrow
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <span className="text-sm sm:text-base md:text-lg font-extrabold text-[#fbbf24]">
-            {tomorrowEvents}
-          </span>
-          <span className="hidden sm:inline text-[10px] text-[#546b80] group-hover:text-[#fbbf24] transition-colors tracking-widest">
-            &gt;&gt;&gt;
-          </span>
-        </div>
+        <span className="text-base sm:text-xl font-bold text-[#fbbf24] shrink-0">
+          {tomorrowEvents}
+        </span>
       </div>
 
       {/* Card 4: Closing Today */}
       <div
         onClick={() => onSelectMetric?.('closing')}
-        className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] hover:bg-[#0f1a28] shadow-sm shadow-black/20 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 h-10 sm:h-11 flex items-center justify-between transition-all cursor-pointer group shadow-xs"
+        className="bg-[#0c141f] border border-[#1b2737] hover:border-[#2a3c50] rounded-2xl p-3 sm:p-3.5 flex items-center justify-between transition-all cursor-pointer group shadow-sm shadow-black/20"
         title="View Registrations Closing Today"
       >
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <Clock className="w-3.5 h-3.5 text-[#ef4444] shrink-0" />
-          <span className="text-[10px] sm:text-[11px] font-semibold text-[#748ba0] tracking-wider uppercase truncate">
-            <span className="sm:hidden">CLOSING</span>
-            <span className="hidden sm:inline">CLOSING TODAY</span>
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-[#ef4444]/15 flex items-center justify-center shrink-0">
+            <Clock className="w-4 h-4 text-[#ef4444]" />
+          </div>
+          <span className="text-xs font-medium text-[#70879d] tracking-normal truncate">
+            <span className="sm:hidden">Closing</span>
+            <span className="hidden sm:inline">Closing Today</span>
           </span>
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          <span className="text-sm sm:text-base md:text-lg font-extrabold text-[#ef4444]">
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-base sm:text-xl font-bold text-[#ef4444]">
             {closingToday}
           </span>
-          <span className="text-[8px] sm:text-[9px] text-[#ef4444] border border-[#ef4444]/40 bg-[#ef4444]/5 px-1 py-0.2 rounded uppercase font-semibold">
-            ACTION
-          </span>
-          <span className="hidden sm:inline text-[10px] text-[#546b80] group-hover:text-[#ef4444] transition-colors tracking-widest">
-            &gt;&gt;&gt;
+          <span className="text-[10px] text-[#ef4444] border border-[#ef4444]/40 bg-[#ef4444]/10 px-1.5 py-0.5 rounded-full font-semibold">
+            Action
           </span>
         </div>
       </div>

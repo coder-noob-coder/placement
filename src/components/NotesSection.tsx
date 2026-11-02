@@ -12,7 +12,7 @@ interface NoteItem {
 }
 
 const STORAGE_KEY = 'placement_terminal_notes_v1';
-const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
 function filterExpiredNotes(notes: NoteItem[]): NoteItem[] {
   const now = Date.now();
@@ -25,33 +25,30 @@ function filterExpiredNotes(notes: NoteItem[]): NoteItem[] {
 }
 
 function getTimeRemaining(createdAt?: string): string {
-  if (!createdAt) return '24H LEFT';
+  if (!createdAt) return '24h left';
   const created = new Date(createdAt).getTime();
-  if (isNaN(created)) return '24H LEFT';
+  if (isNaN(created)) return '24h left';
   const elapsed = Date.now() - created;
   const remainingMs = TWENTY_FOUR_HOURS_MS - elapsed;
-  if (remainingMs <= 0) return 'EXPIRING';
+  if (remainingMs <= 0) return 'Expiring';
   const hours = Math.floor(remainingMs / (1000 * 60 * 60));
   const mins = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-  if (hours > 0) return `${hours}H LEFT`;
-  return `${mins}M LEFT`;
+  if (hours > 0) return `${hours}h left`;
+  return `${mins}m left`;
 }
 
 function formatNoteTimestamp(createdAt?: string, fallback?: string): string {
   if (!createdAt) return fallback || '';
   const d = new Date(createdAt);
   if (isNaN(d.getTime())) return fallback || '';
-  return d
-    .toLocaleString('en-IN', {
-      timeZone: 'Asia/Kolkata',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    })
-    .toUpperCase();
+  return d.toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
 }
 
 function getLocalNotes(): NoteItem[] {
@@ -88,7 +85,6 @@ export const NotesSection: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // 1. Initial Load from localStorage immediately on mount
   useEffect(() => {
     const cached = getLocalNotes();
     if (cached.length > 0) {
@@ -96,58 +92,50 @@ export const NotesSection: React.FC = () => {
     }
   }, []);
 
-  // 2. Fetch and merge with server notes
   const fetchNotes = useCallback(async (quiet = false) => {
+    if (!quiet) setIsRefreshing(true);
     try {
-      if (!quiet) setIsRefreshing(true);
-      const res = await fetch(`/api/notes?t=${Date.now()}`, { cache: 'no-store' });
-      const data = await res.json();
-
-      if (data.success && Array.isArray(data.notes)) {
-        setNotes((prev) => {
-          const currentLocal = getLocalNotes();
-          // Merge server notes with local notes, deduplicating by id
-          const map = new Map<string, NoteItem>();
-
-          // Add server notes first
-          data.notes.forEach((n: NoteItem) => {
-            if (n && n.id) map.set(n.id, n);
+      const res = await fetch('/api/notes', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.notes)) {
+          const valid = filterExpiredNotes(data.notes);
+          setNotes((prev) => {
+            const map = new Map<string, NoteItem>();
+            prev.forEach((n) => map.set(n.id, n));
+            valid.forEach((n: NoteItem) => map.set(n.id, n));
+            const merged = Array.from(map.values());
+            merged.sort(
+              (a, b) =>
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+            const activeOnly = filterExpiredNotes(merged);
+            saveLocalNotes(activeOnly);
+            return activeOnly;
           });
-
-          // Add existing local notes
-          [...prev, ...currentLocal].forEach((n: NoteItem) => {
-            if (n && n.id && !map.has(n.id)) {
-              map.set(n.id, n);
-            }
-          });
-
-          const merged = Array.from(map.values()).sort(
-            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-
-          const active = filterExpiredNotes(merged);
-          saveLocalNotes(active);
-          return active;
-        });
+        }
       }
     } catch (err) {
-      console.error('Failed to load notes from server:', err);
+      console.error('Failed to fetch notes:', err);
     } finally {
-      setIsRefreshing(false);
+      if (!quiet) setIsRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
-
-  // Polling every 5 seconds for shared live updates & periodic cleanup
-  useEffect(() => {
-    const timer = setInterval(() => {
+    fetchNotes(true);
+    const interval = setInterval(() => {
       fetchNotes(true);
-    }, 5000);
-
-    return () => clearInterval(timer);
+      setNotes((prev) => {
+        const purged = filterExpiredNotes(prev);
+        if (purged.length !== prev.length) {
+          saveLocalNotes(purged);
+          return purged;
+        }
+        return prev;
+      });
+    }, 15000);
+    return () => clearInterval(interval);
   }, [fetchNotes]);
 
   const handleSubmitNote = async (e: React.FormEvent) => {
@@ -159,7 +147,6 @@ export const NotesSection: React.FC = () => {
     const now = new Date();
     const timestampFormatted = formatNoteTimestamp(now.toISOString());
 
-    // Optimistic local note item
     const newNote: NoteItem = {
       id: `note_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       text: trimmedText,
@@ -168,7 +155,6 @@ export const NotesSection: React.FC = () => {
       timestampFormatted,
     };
 
-    // Immediately update UI and localStorage so it NEVER disappears on refresh
     setNotes((prev) => {
       const updated = filterExpiredNotes([newNote, ...prev]);
       saveLocalNotes(updated);
@@ -191,31 +177,35 @@ export const NotesSection: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#0a1219] border border-[#142330] rounded-xl p-4 sm:p-5 space-y-4 font-mono">
+    <div className="bg-[#0c141f] border border-[#1b2737] rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm shadow-black/20 select-none">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#142330]">
-        <div className="flex items-center gap-2">
-          <MessageSquare className="w-4 h-4 text-[#00ff66]" />
-          <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-wider">
-            Live Notes &amp; Prep Board
-          </h2>
-          <span className="text-[10px] text-amber-400 border border-amber-400/30 bg-amber-400/10 px-1.5 py-0.5 rounded tracking-wider uppercase font-semibold">
-            24H EPHEMERAL
+      <div className="flex items-center justify-between pb-3 border-b border-[#172332]">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="w-8 h-8 rounded-xl bg-[#22c55e]/15 flex items-center justify-center shrink-0">
+            <MessageSquare className="w-4 h-4 text-[#22c55e]" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+              Live Notes &amp; Prep Board
+            </h2>
+          </div>
+          <span className="text-[10px] text-amber-400 border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 rounded-full font-semibold">
+            24h Auto-Purge
           </span>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[11px] text-[#546b80] hidden sm:inline">
-            [ {notes.length} ACTIVE ]
+          <span className="text-xs text-[#70879d] hidden sm:inline">
+            {notes.length} active
           </span>
           <button
             onClick={() => fetchNotes()}
             disabled={isRefreshing}
-            className="p-1 rounded bg-[#070c12] border border-[#142330] text-[#70879d] hover:text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl bg-[#131d2a] border border-[#1e2c3c] text-[#70879d] hover:text-white transition-colors cursor-pointer"
             title="Refresh Notes"
           >
             <RefreshCw
-              className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-[#00ff66]' : ''}`}
+              className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-[#22c55e]' : ''}`}
             />
           </button>
         </div>
@@ -228,8 +218,8 @@ export const NotesSection: React.FC = () => {
             type="text"
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
-            placeholder="YOUR NAME / HANDLE (OPTIONAL)..."
-            className="w-full sm:w-56 px-3 py-1.5 rounded-md bg-[#070c12] text-xs text-white placeholder-[#546b80] border border-[#142330] focus:outline-none focus:border-[#00ff66]/50 uppercase tracking-wider"
+            placeholder="Your name / handle (optional)..."
+            className="w-full sm:w-56 px-3.5 py-2 rounded-xl bg-[#131d2a] text-xs text-white placeholder-[#70879d] border border-[#1e2c3c] focus:outline-none focus:border-[#22c55e]"
           />
 
           <div className="flex-1 flex gap-2">
@@ -237,53 +227,52 @@ export const NotesSection: React.FC = () => {
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="WRITE A NOTE, INTERVIEW QUESTION, TIP, OR ANNOUNCEMENT..."
-              className="flex-1 px-3 py-1.5 rounded-md bg-[#070c12] text-xs text-white placeholder-[#546b80] border border-[#142330] focus:outline-none focus:border-[#00ff66]/50 uppercase tracking-wider"
+              placeholder="Write a note, question, tip, or announcement..."
+              className="flex-1 px-3.5 py-2 rounded-xl bg-[#131d2a] text-xs text-white placeholder-[#70879d] border border-[#1e2c3c] focus:outline-none focus:border-[#22c55e]"
             />
 
             <button
               type="submit"
               disabled={!inputText.trim() || isSubmitting}
-              className="px-4 py-1.5 rounded-md bg-[#00ff66]/10 border border-[#00ff66]/40 text-[#00ff66] hover:bg-[#00ff66]/20 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+              className="px-4 py-2 rounded-xl bg-[#22c55e] hover:bg-[#16a34a] text-black font-semibold text-xs flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
             >
               <Send className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">POST</span>
+              <span className="hidden sm:inline">Post</span>
             </button>
           </div>
         </div>
       </form>
 
       {/* Notes Stream */}
-      <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+      <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
         {notes.length === 0 ? (
-          <div className="py-8 text-center text-xs text-[#546b80] tracking-wider border border-dashed border-[#142330] rounded-lg">
-            [ NO ACTIVE NOTES. POSTS ARE SHARED IN REAL-TIME AND AUTO-PURGE AFTER 24 HOURS. ]
+          <div className="py-8 text-center text-xs text-[#70879d] border border-dashed border-[#1b2737] rounded-xl">
+            No active notes yet. Posts are shared in real-time and auto-delete after 24 hours.
           </div>
         ) : (
           notes.map((item) => (
             <div
               key={item.id}
-              className="p-3 rounded-lg bg-[#070c12] border border-[#142330] hover:border-[#1d354a] transition-colors group space-y-1.5"
+              className="p-3.5 sm:p-4 rounded-2xl bg-[#131d2a] border border-[#1e2c3c] hover:border-[#2a3c50] transition-colors group space-y-1.5"
             >
-              <div className="flex items-center justify-between text-[11px]">
+              <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="text-[#00ff66] font-bold tracking-wider">
+                  <span className="text-[#22c55e] font-semibold">
                     {item.author}
                   </span>
                   <span className="text-[#334657]">&bull;</span>
-                  <span className="text-[#546b80]">
+                  <span className="text-[#70879d] text-[11px]">
                     {formatNoteTimestamp(item.createdAt, item.timestampFormatted)}
                   </span>
                 </div>
 
-                {/* Auto-expire countdown badge */}
-                <div className="flex items-center gap-1 text-[10px] text-amber-400/90 font-mono tracking-wider shrink-0 bg-[#0a1219] border border-[#142330] px-1.5 py-0.5 rounded">
-                  <Clock className="w-3 h-3 text-amber-400/80" />
+                <div className="flex items-center gap-1 text-[11px] text-amber-400 font-medium shrink-0 bg-[#0c141f] border border-[#1b2737] px-2 py-0.5 rounded-full">
+                  <Clock className="w-3 h-3 text-amber-400" />
                   <span>{getTimeRemaining(item.createdAt)}</span>
                 </div>
               </div>
 
-              <p className="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">
                 {item.text}
               </p>
             </div>

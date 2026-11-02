@@ -19,7 +19,7 @@ import { CompanyCard } from '@/components/CompanyCard';
 import { CompanyTable } from '@/components/CompanyTable';
 import { CompanyDetailModal } from '@/components/CompanyDetailModal';
 import { MobileBottomNav, NavTab } from '@/components/MobileBottomNav';
-import { Inbox, Sparkles, Calendar, History, Info } from 'lucide-react';
+import { Inbox, Sparkles, History, Info } from 'lucide-react';
 
 function isTodayDate(str?: string): boolean {
   if (!str) return false;
@@ -406,15 +406,10 @@ export default function PlacementTrackerPage() {
                 onSelectMetric={handleSelectMetric}
               />
 
-              {/* Minimal Terminal Notice Banner */}
-              <div className="bg-[#0c1520] border border-[#1b2d3e] hover:border-[#28425b] shadow-sm shadow-black/20 rounded-lg px-3 py-2 flex items-center gap-2 text-xs font-mono transition-colors select-none">
-                <Info className="w-3.5 h-3.5 text-[#fbbf24] shrink-0" />
-                <span className="text-[#fbbf24] font-bold text-[10px] tracking-wider uppercase shrink-0">
-                  [ NOTE ]
-                </span>
-                <span className="text-slate-300 text-xs tracking-wide">
-                  Data before mid-Sept is not complete.
-                </span>
+              {/* Modern Alert Banner */}
+              <div className="bg-[#131d2a] border border-[#1e2c3c] rounded-2xl px-3.5 py-2.5 flex items-center gap-2.5 text-xs text-slate-300 shadow-sm shadow-black/20 select-none">
+                <Info className="w-4 h-4 text-[#fbbf24] shrink-0" />
+                <span className="font-medium text-slate-300">Data before mid-Sept is not complete.</span>
               </div>
 
               {/* Daily Action Agenda */}
@@ -423,48 +418,6 @@ export default function PlacementTrackerPage() {
                 onSelectCompany={handleSelectCompanyFromAgenda}
               />
             </>
-          )}
-
-          {/* 2. CALENDAR VIEW */}
-          {activeTab === 'calendar' && (
-            <div className="bg-[#0a1219] border border-[#142330] rounded-xl p-4 sm:p-5 space-y-3">
-              <div className="flex items-center justify-between pb-2.5 border-b border-[#142330]">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-[#00ff66]" />
-                  <h2 className="font-bold text-white text-sm uppercase tracking-wider">
-                    Schedule Calendar
-                  </h2>
-                </div>
-                <span className="text-xs text-[#546b80]">
-                  [ {drives.filter((d) => d.oaDate || d.interviewDate).length} EVENTS ]
-                </span>
-              </div>
-
-              <div className="divide-y divide-[#142330]">
-                {drives
-                  .filter((d) => d.oaDate || d.interviewDate)
-                  .map((d) => (
-                    <div
-                      key={d.id}
-                      onClick={() => setSelectedDrive(d)}
-                      className="py-2.5 flex items-center justify-between hover:bg-[#0c151e] px-2 rounded cursor-pointer transition-colors"
-                    >
-                      <div>
-                        <div className="font-bold text-white text-xs">{d.company}</div>
-                        <div className="text-[11px] text-[#70879d]">{d.role}</div>
-                      </div>
-                      <div className="text-right text-[11px] font-mono space-y-0.5">
-                        {d.oaDate && (
-                          <div className="text-sky-400">[ OA: {d.oaDate} ]</div>
-                        )}
-                        {d.interviewDate && (
-                          <div className="text-purple-400">[ INT: {d.interviewDate} ]</div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
           )}
 
           {/* 3. ANALYTICS / STATS VIEW (Bar & Pie Charts with 5+, 10+, 15+, 20+, 25+) */}
