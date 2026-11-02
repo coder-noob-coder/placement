@@ -102,9 +102,7 @@ export const DashboardMetrics: React.FC<DashboardMetricsProps> = ({
           <span className="text-base sm:text-xl font-bold text-[#ef4444]">
             {closingToday}
           </span>
-          <span className="text-[10px] text-[#ef4444] border border-[#ef4444]/40 bg-[#ef4444]/10 px-1.5 py-0.5 rounded-full font-semibold">
-            Action
-          </span>
+          
         </div>
       </div>
     </div>

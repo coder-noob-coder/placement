@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { RefreshCw, Search, X, Code2, Bell, Plus } from 'lucide-react';
+import { RefreshCw, Search, X, Code2, Plus } from 'lucide-react';
 import { NavTab } from './MobileBottomNav';
 
 interface NavbarProps {
@@ -40,7 +40,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-40 w-full border-b border-[#172332] bg-[#070c12]/95 backdrop-blur-md select-none transition-colors">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
-          {/* Left: </> Placement Tracker 2026 (BMSCE*) */}
+          {/* Left: </> Placement Tracker 2026 */}
           <div
             className="flex items-center gap-2 min-w-0 flex-1 cursor-pointer"
             onClick={() => onTabChange?.('dashboard')}
@@ -52,9 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="font-bold text-xs sm:text-base text-white tracking-tight truncate block leading-tight">
                 Placement Tracker 2026
               </span>
-              <span className="text-[10px] text-[#70879d] tracking-wider block font-medium">
-                BMSCE*
-              </span>
+              
             </div>
           </div>
 
@@ -104,16 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               />
             </button>
 
-            {/* Notification Bell with indicator */}
-            <button
-              onClick={() => onTabChange?.('past')}
-              className="p-1.5 sm:p-2 rounded-xl text-slate-300 hover:text-white hover:bg-[#131d2a] transition-colors cursor-pointer relative"
-              title="Notifications"
-              aria-label="Notifications"
-            >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 sm:top-1.5 right-1 sm:right-1.5 w-2 h-2 rounded-full bg-[#22c55e] ring-2 ring-[#070c12]" />
-            </button>
+            
 
             {/* Green Plus Action Button */}
             <button
