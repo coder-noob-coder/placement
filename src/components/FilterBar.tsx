@@ -54,7 +54,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onCtcFilterChange,
   sortByDate,
   onSortByDateChange,
-  totalFiltered,
   onReset,
   search = '',
 }) => {
@@ -89,10 +88,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
   return (
     <div className="bg-[#0c1520] border border-[#1b2d3e] rounded-xl p-3 sm:p-3.5 mb-4 space-y-2 font-mono transition-colors shadow-md shadow-black/30">
-      {/* Row 1: Tiers on left, Total count + Sort button on right */}
-      <div className="flex items-center justify-between gap-1.5 flex-wrap sm:flex-nowrap">
+      {/* Row 1: Tiers on left, Sort button on right — strictly on ONE line */}
+      <div className="flex items-center justify-between gap-1.5">
         {/* Tier Filters: ALL · TIER 1 · TIER 2 */}
-        <div className="flex items-center gap-1 shrink-0 py-0.5">
+        <div className="flex items-center gap-1 shrink-0">
           <span className="text-[10px] text-[#546b80] uppercase tracking-wider mr-0.5 font-semibold shrink-0">
             TIERS:
           </span>
@@ -115,22 +114,17 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           })}
         </div>
 
-        {/* Right side: Drive Count & Reset + Sort Button */}
-        <div className="flex items-center gap-2 shrink-0 ml-auto">
-          <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-mono text-[#61788d]">
-            <span>
-              [ <strong className="text-white">{totalFiltered}</strong> ]
-            </span>
-            {hasActiveFilter && (
-              <button
-                type="button"
-                onClick={onReset}
-                className="text-[#ef4444] hover:underline uppercase tracking-wider cursor-pointer font-bold text-[10px]"
-              >
-                RESET
-              </button>
-            )}
-          </div>
+        {/* Right side: RESET (when active) + Sort Button */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {hasActiveFilter && (
+            <button
+              type="button"
+              onClick={onReset}
+              className="text-[#ef4444] hover:underline uppercase tracking-wider cursor-pointer font-bold text-[10px] px-1"
+            >
+              RESET
+            </button>
+          )}
 
           {/* Simple Sort Button with Popup */}
           <div className="relative shrink-0" ref={sortMenuRef}>
