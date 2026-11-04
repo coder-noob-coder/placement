@@ -19,7 +19,7 @@ import { CompanyCard } from '@/components/CompanyCard';
 import { CompanyTable } from '@/components/CompanyTable';
 import { CompanyDetailModal } from '@/components/CompanyDetailModal';
 import { MobileBottomNav, NavTab } from '@/components/MobileBottomNav';
-import { Inbox, Sparkles, History, Info } from 'lucide-react';
+import { Inbox, Sparkles, History, Info, ChevronDown } from 'lucide-react';
 
 function isTodayDate(str?: string): boolean {
   if (!str) return false;
@@ -146,6 +146,7 @@ export default function PlacementTrackerPage() {
   const [sortByDate, setSortByDate] = useState<DateSortOption>('deadline-asc');
   const [showTodayOnly, setShowTodayOnly] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [visibleCount, setVisibleCount] = useState(25);
 
   // Selected company modal for detailed inspection
   const [selectedDrive, setSelectedDrive] = useState<PlacementDrive | null>(null);
@@ -328,6 +329,11 @@ export default function PlacementTrackerPage() {
     return list;
   }, [drives, search, selectedTier, ctcFilter, statusFilter, showTodayOnly, sortByDate, activeTab]);
 
+  // Reset visible items count when any filter or query changes
+  useEffect(() => {
+    setVisibleCount(25);
+  }, [search, selectedTier, ctcFilter, statusFilter, showTodayOnly, sortByDate, activeTab]);
+
   const handleResetFilters = () => {
     setSearch('');
     setSelectedTier('All');
@@ -335,6 +341,7 @@ export default function PlacementTrackerPage() {
     setStatusFilter('all');
     setSortByDate('deadline-asc');
     setShowTodayOnly(false);
+    setVisibleCount(25);
   };
 
   const handleSelectMetric = (metric: 'all' | 'todayEvents' | 'tomorrow' | 'closing') => {
@@ -510,7 +517,7 @@ export default function PlacementTrackerPage() {
                 </div>
               ) : viewMode === 'grid' ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {filteredDrives.map((drive) => (
+                  {filteredDrives.slice(0, visibleCount).map((drive) => (
                     <CompanyCard
                       key={drive.id}
                       drive={drive}
@@ -521,10 +528,32 @@ export default function PlacementTrackerPage() {
                 </div>
               ) : (
                 <CompanyTable
-                  drives={filteredDrives}
+                  drives={filteredDrives.slice(0, visibleCount)}
                   isPastDrive={isInterviewOver}
                   onSelect={(d) => setSelectedDrive(d)}
                 />
+              )}
+
+              {/* Load More Pagination & End-of-List Indicator */}
+              {filteredDrives.length > 0 && (
+                <>
+                  {visibleCount < filteredDrives.length ? (
+                    <button
+                      type="button"
+                      onClick={() => setVisibleCount((prev) => prev + 20)}
+                      className="w-full py-3 px-4 rounded-xl text-xs font-semibold font-mono text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 transition-colors flex items-center justify-center gap-2 mt-4 cursor-pointer"
+                    >
+                      <span>
+                        Load 20 More ({Math.min(visibleCount, filteredDrives.length)} of {filteredDrives.length})
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                    </button>
+                  ) : (
+                    <div className="text-center text-xs text-slate-500 py-4 font-mono">
+                      All {filteredDrives.length} drives loaded
+                    </div>
+                  )}
+                </>
               )}
             </section>
           )}
