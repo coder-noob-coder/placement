@@ -462,7 +462,7 @@ export default function PlacementTrackerPage() {
               {/* Modern Alert Banner */}
               <div className="bg-[#131d2a] border border-[#1e2c3c] rounded-2xl px-3.5 py-2.5 flex items-center gap-2.5 text-xs text-slate-300 shadow-sm shadow-black/20 select-none">
                 <Info className="w-4 h-4 text-[#fbbf24] shrink-0" />
-                <span className="font-medium text-slate-300">Covers CS Cluster &amp; ECE only (Core branch drives not included)</span>
+                <span className="font-medium text-slate-300">Primarily covers CS Cluster &amp; ECE • Core branch drives may be incomplete</span>
               </div>
 
               {/* Daily Action Agenda */}
