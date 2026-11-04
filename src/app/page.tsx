@@ -462,11 +462,7 @@ export default function PlacementTrackerPage() {
               {/* Modern Alert Banner */}
               <div className="bg-[#131d2a] border border-[#1e2c3c] rounded-2xl px-3.5 py-2.5 flex items-center gap-2.5 text-xs text-slate-300 shadow-sm shadow-black/20 select-none">
                 <Info className="w-4 h-4 text-[#fbbf24] shrink-0" />
-                <div className="flex items-center gap-2 flex-wrap font-medium text-slate-300">
-                  <span>Covers CS Cluster &amp; ECE only (Core branch drives not included)</span>
-                  <span className="hidden sm:inline text-slate-500">•</span>
-                  <span className="text-slate-400 text-[11px] sm:text-xs">Data before mid-Sept is not complete.</span>
-                </div>
+                <span className="font-medium text-slate-300">Covers CS Cluster &amp; ECE only (Core branch drives not included)</span>
               </div>
 
               {/* Daily Action Agenda */}
