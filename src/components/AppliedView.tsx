@@ -5,7 +5,7 @@ import { PlacementDrive } from '@/lib/db';
 import { CompanyLogo } from './CompanyLogo';
 import { formatDateShort, formatCtc, formatStipend } from './CompanyCard';
 import { Bookmark, Briefcase, ChevronRight } from 'lucide-react';
-import { ApplicationStage, useSavedDrives } from '@/hooks/useSavedDrives';
+import { useSavedDrives } from '@/hooks/useSavedDrives';
 
 interface AppliedViewProps {
   drives: PlacementDrive[];
@@ -101,7 +101,7 @@ export const AppliedView: React.FC<AppliedViewProps> = ({
   onSelectCompany,
   onNavigateHome,
 }) => {
-  const { isSaved, getStage, toggleSave, updateStage, mounted } = useSavedDrives();
+  const { isSaved, getStage, mounted } = useSavedDrives();
   const [activeRoundFilter, setActiveRoundFilter] = useState<RoundFilter>(null);
 
   // Filter drives saved in localStorage
@@ -358,100 +358,57 @@ export const AppliedView: React.FC<AppliedViewProps> = ({
                   </div>
                 ) : null}
 
-                {/* Row 1: Logo + Company Name & Role + CTC & Bookmark Button */}
-                <div className="flex items-start justify-between gap-2.5">
-                  {/* Left: Logo & Titles */}
+                {/* Row 1: Logo + Company Name (Left) & Package CTC / Stipend (Right) */}
+                <div className="flex items-center justify-between gap-3">
+                  {/* Left: Logo & Company Name */}
                   <div className="flex items-center gap-2.5 min-w-0 flex-1">
                     <CompanyLogo company={drive.company} size="sm" className="w-8 h-8 rounded-lg shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-bold text-white text-sm sm:text-base leading-tight truncate group-hover:text-[#22c55e] transition-colors">
-                        {drive.company}
-                      </h3>
-                      <p className="text-[11px] text-[#8fa0b2] truncate font-normal mt-0.5">
-                        {drive.role || 'Job Profile'}
-                      </p>
-                    </div>
+                    <h3 className="font-bold text-white text-sm sm:text-base leading-tight truncate group-hover:text-[#22c55e] transition-colors">
+                      {drive.company}
+                    </h3>
                   </div>
 
-                  {/* Right: Package CTC + Bookmark Button */}
-                  <div className="flex items-center gap-2 shrink-0">
-                    <div className="text-right">
-                      <div className="text-sm font-bold text-[#22c55e] font-mono leading-none">
-                        {ctcInfo.value}
-                      </div>
-                      {formattedStipend ? (
-                        <div className="text-[10px] text-[#70879d] mt-0.5">
-                          {formattedStipend}
-                        </div>
-                      ) : (
-                        <div className="text-[10px] text-[#70879d] mt-0.5">
-                          Package
-                        </div>
-                      )}
+                  {/* Right: Package CTC + Stipend */}
+                  <div className="text-right shrink-0">
+                    <div className="text-sm sm:text-base font-bold text-[#22c55e] font-mono leading-none">
+                      {ctcInfo.value}
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSave(drive.id, drive.company);
-                      }}
-                      className="p-1 rounded-lg border bg-emerald-500/15 border-emerald-500/40 text-[#22c55e] hover:bg-rose-500/15 hover:border-rose-500/40 hover:text-rose-400 transition-colors cursor-pointer"
-                      title="Remove from Applied"
-                      aria-label="Remove from Applied"
-                    >
-                      <Bookmark className="w-3.5 h-3.5 fill-emerald-400 text-emerald-400" />
-                    </button>
+                    {formattedStipend ? (
+                      <div className="text-[10px] text-[#70879d] mt-0.5">
+                        {formattedStipend}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
 
-                {/* Row 2: Badges (Tier, Stage Pill) + Event Schedule & Details */}
+                {/* Row 2: Event Schedule & Details */}
                 <div className="flex items-center justify-between gap-2 pt-1 border-t border-[#172332]/70 text-[11px]">
-                  {/* Left: Tier Badge + Stage Pill + Placed */}
-                  <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-                    <span className="border border-emerald-500/40 text-emerald-400 bg-emerald-950/20 text-[10px] px-2 py-0.2 rounded-full font-medium shrink-0">
-                      {drive.tier}
-                    </span>
-
-                    {/* Interactive Stage Tag (1-click cycle) */}
-                    <span
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const stages: ApplicationStage[] = ['Applied', 'OA Round', 'Interview', 'Offered'];
-                        const nextIdx = (stages.indexOf(currentStage) + 1) % stages.length;
-                        updateStage(drive.id, stages[nextIdx], drive.company);
-                      }}
-                      title="Click to cycle: Applied -> OA Round -> Interview -> Offered"
-                      className={`text-[10px] px-2 py-0.2 rounded-full font-medium inline-flex items-center gap-1 cursor-pointer transition-all ${
-                        currentStage === 'Offered'
-                          ? 'border border-emerald-500/60 text-emerald-300 bg-emerald-950/40 font-semibold'
-                          : currentStage === 'Interview'
-                          ? 'border border-purple-500/50 text-purple-300 bg-purple-950/30'
-                          : currentStage === 'OA Round'
-                          ? 'border border-amber-500/50 text-amber-300 bg-amber-950/30'
-                          : 'border border-cyan-500/50 text-cyan-300 bg-cyan-950/30'
-                      }`}
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                      {currentStage}
-                    </span>
+                  {/* Left: Schedule Date / Placed Count */}
+                  <div className="flex items-center gap-2 min-w-0">
+                    {drive.interviewDate ? (
+                      <span className="text-[#8fa0b2] truncate font-medium">
+                        INT: <span className="text-slate-300">{formatDateShort(drive.interviewDate)}</span>
+                      </span>
+                    ) : drive.oaDate ? (
+                      <span className="text-[#8fa0b2] truncate font-medium">
+                        OA: <span className="text-slate-300">{formatDateShort(drive.oaDate)}</span>
+                      </span>
+                    ) : drive.deadline ? (
+                      <span className="text-[#8fa0b2] truncate font-medium">
+                        Deadline: <span className="text-slate-300">{formatDateShort(drive.deadline)}</span>
+                      </span>
+                    ) : null}
 
                     {drive.studentsPlaced ? (
-                      <span className="border border-emerald-500/40 text-emerald-400 bg-emerald-950/20 text-[10px] px-1.5 py-0.2 rounded-full font-medium shrink-0">
+                      <span className="border border-emerald-500/30 text-emerald-400 bg-emerald-950/20 text-[10px] px-1.5 py-0.2 rounded-full font-medium shrink-0">
                         {drive.studentsPlaced} Placed
                       </span>
                     ) : null}
                   </div>
 
-                  {/* Right: Schedule & Chevron */}
-                  <div className="flex items-center gap-1 text-[11px] text-[#70879d] group-hover:text-slate-200 transition-colors shrink-0">
-                    {drive.interviewDate ? (
-                      <span className="text-[#8fa0b2]">INT: {formatDateShort(drive.interviewDate)}</span>
-                    ) : drive.oaDate ? (
-                      <span className="text-[#8fa0b2]">OA: {formatDateShort(drive.oaDate)}</span>
-                    ) : drive.deadline ? (
-                      <span className="text-[#8fa0b2]">Deadline: {formatDateShort(drive.deadline)}</span>
-                    ) : null}
+                  {/* Right: Details Chevron */}
+                  <div className="flex items-center gap-0.5 text-[11px] text-[#70879d] group-hover:text-slate-200 transition-colors shrink-0">
+                    <span>Details</span>
                     <ChevronRight className="w-3.5 h-3.5 text-[#546b80] group-hover:text-white" />
                   </div>
                 </div>
