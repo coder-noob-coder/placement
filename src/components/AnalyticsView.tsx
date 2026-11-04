@@ -266,10 +266,24 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
     const ctcs = drives.map((d) => parseCtcMax(d.ctc)).filter((v) => v > 0);
     const maxCtc = ctcs.length > 0 ? Math.max(...ctcs) : 0;
     const avgCtc = ctcs.length > 0 ? ctcs.reduce((a, b) => a + b, 0) / ctcs.length : 0;
+
+    const sorted = [...ctcs].sort((a, b) => a - b);
+    let median = 0;
+    if (sorted.length > 0) {
+      const mid = Math.floor(sorted.length / 2);
+      median = sorted.length % 2 === 1 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+    }
+
+    const formatLpa = (val: number) => {
+      if (val <= 0) return 'TBA';
+      return val % 1 === 0 ? `₹${val} LPA` : `₹${val.toFixed(1)} LPA`;
+    };
+
     return {
       total: drives.length,
       maxCtc: maxCtc > 0 ? `₹${maxCtc} LPA` : 'TBA',
       avgCtc: avgCtc > 0 ? `₹${avgCtc.toFixed(1)} LPA` : 'TBA',
+      medianCtc: formatLpa(median),
     };
   }, [drives]);
 
@@ -324,7 +338,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       </div>
 
       {/* Top Key Metrics Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
         <div className="p-3.5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c]">
           <span className="text-[11px] text-[#70879d] font-medium block">
             Total Pipeline
@@ -352,10 +366,20 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           <span className="text-xl sm:text-2xl font-bold text-sky-400 block mt-0.5 font-mono">
             {stats.avgCtc}
           </span>
-          <span className="text-[10px] text-[#70879d] block mt-0.5">Average Package</span>
+          <span className="text-[10px] text-[#70879d] block mt-0.5">Mean Package</span>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c]">
+          <span className="text-[11px] text-[#70879d] font-medium block">
+            Median CTC
+          </span>
+          <span className="text-xl sm:text-2xl font-bold text-indigo-400 block mt-0.5 font-mono">
+            {stats.medianCtc}
+          </span>
+          <span className="text-[10px] text-[#70879d] block mt-0.5">50th Percentile</span>
+        </div>
+
+        <div className="col-span-2 sm:col-span-1 p-3.5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c]">
           <span className="text-[11px] text-[#70879d] font-medium block">
             Total Placed
           </span>
