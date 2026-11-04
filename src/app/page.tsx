@@ -425,6 +425,7 @@ export default function PlacementTrackerPage() {
             <AnalyticsView
               drives={drives}
               onSelectCtcFilter={handleSelectCtcFromAnalytics}
+              onSelectCompany={(drive) => setSelectedDrive(drive)}
             />
           )}
 

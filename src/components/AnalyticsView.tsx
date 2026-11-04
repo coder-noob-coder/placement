@@ -7,6 +7,7 @@ import { BarChart3, PieChart as PieChartIcon, TrendingUp, Trophy } from 'lucide-
 interface AnalyticsViewProps {
   drives: PlacementDrive[];
   onSelectCtcFilter?: (minLpa: number) => void;
+  onSelectCompany?: (drive: PlacementDrive) => void;
 }
 
 function parseCtcMax(str?: string): number {
@@ -28,7 +29,11 @@ function parsePlacedCount(str?: string): number {
   return nums.map(Number).reduce((a, b) => a + b, 0);
 }
 
-export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCtcFilter }) => {
+export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
+  drives,
+  onSelectCtcFilter,
+  onSelectCompany,
+}) => {
   const [chartType, setChartType] = useState<'bar' | 'pie'>('bar');
   const [distributionMode, setDistributionMode] = useState<'students' | 'drives'>('students');
   const [recruiterSortMode, setRecruiterSortMode] = useState<'offers' | 'ctc'>('offers');
@@ -192,7 +197,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
   const topRecruiters = useMemo(() => {
     const recruiterMap = new Map<
       string,
-      { company: string; placedCount: number; ctc?: string; maxCtc: number }
+      { company: string; placedCount: number; ctc?: string; maxCtc: number; drive: PlacementDrive }
     >();
 
     for (const d of drives) {
@@ -208,15 +213,19 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
             placedCount: count,
             ctc: d.ctc && d.ctc !== 'Not Specified' && d.ctc !== 'Check Superset' ? d.ctc : undefined,
             maxCtc: ctcVal,
+            drive: d,
           });
         } else {
           const existing = recruiterMap.get(baseName)!;
           existing.placedCount += count;
           if (ctcVal > existing.maxCtc) {
             existing.maxCtc = ctcVal;
+            existing.drive = d;
             if (d.ctc && d.ctc !== 'Not Specified' && d.ctc !== 'Check Superset') {
               existing.ctc = d.ctc;
             }
+          } else if (recruiterSortMode === 'offers' && count > parsePlacedCount(existing.drive.studentsPlaced)) {
+            existing.drive = d;
           }
         }
       }
@@ -584,9 +593,11 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
               return (
                 <div
                   key={recruiter.company}
-                  className="py-2.5 flex items-center justify-between gap-3 group transition-colors"
+                  onClick={() => onSelectCompany?.(recruiter.drive)}
+                  className="py-2.5 px-2 -mx-2 rounded-xl flex items-center justify-between gap-3 group transition-colors cursor-pointer hover:bg-[#0c141f]"
+                  title={`View details for ${recruiter.company}`}
                 >
-                  {/* Left: Rank Badge + Company Name + Secondary Metric */}
+                  {/* Left: Rank Badge + Company Name */}
                   <div className="flex items-center gap-2.5 min-w-0">
                     <span
                       className={`w-6 h-6 rounded-lg text-xs font-bold font-mono flex items-center justify-center shrink-0 ${rankBadgeClass}`}
@@ -594,26 +605,12 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
                       #{idx + 1}
                     </span>
 
-                    <div className="flex items-center gap-2 min-w-0 flex-wrap">
-                      <span className="font-semibold text-white group-hover:text-[#22c55e] text-xs sm:text-sm truncate transition-colors">
-                        {recruiter.company}
-                      </span>
-
-                      {recruiterSortMode === 'offers' ? (
-                        recruiter.ctc && (
-                          <span className="text-[11px] text-[#70879d] font-mono bg-[#0c141f] border border-[#1b2737] px-1.5 py-0.5 rounded-md shrink-0">
-                            {recruiter.ctc}
-                          </span>
-                        )
-                      ) : (
-                        <span className="text-[11px] text-[#22c55e] font-mono bg-[#22c55e]/10 border border-[#22c55e]/25 px-1.5 py-0.5 rounded-md shrink-0">
-                          {recruiter.placedCount} placed
-                        </span>
-                      )}
-                    </div>
+                    <span className="font-semibold text-white group-hover:text-[#22c55e] text-xs sm:text-sm truncate transition-colors">
+                      {recruiter.company}
+                    </span>
                   </div>
 
-                  {/* Right: Primary Metric Pill */}
+                  {/* Right: Primary Metric Pill (By Offers: only placed count | By CTC: only CTC) */}
                   {recruiterSortMode === 'offers' ? (
                     <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/30 font-mono shrink-0">
                       {recruiter.placedCount} placed
