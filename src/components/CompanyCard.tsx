@@ -19,7 +19,7 @@ interface CompanyCardProps {
   isOaToday?: boolean;
 }
 
-function formatDateShort(str?: string): string {
+export function formatDateShort(str?: string): string {
   if (!str) return '—';
   const clean = str.trim();
   if (
@@ -33,7 +33,7 @@ function formatDateShort(str?: string): string {
   return clean.replace(/\b20(\d{2})\b/, "'$1");
 }
 
-function formatCtc(rawCtc?: string): { value: string; isNotSpecified: boolean } {
+export function formatCtc(rawCtc?: string): { value: string; isNotSpecified: boolean } {
   if (!rawCtc || !rawCtc.trim()) {
     return { value: 'Not Specified', isNotSpecified: true };
   }
@@ -59,7 +59,7 @@ function formatCtc(rawCtc?: string): { value: string; isNotSpecified: boolean } 
   return { value: clean, isNotSpecified: false };
 }
 
-function formatStipend(rawStipend?: string): string {
+export function formatStipend(rawStipend?: string): string {
   if (!rawStipend || !rawStipend.trim()) return '';
   const clean = rawStipend.trim();
   const lower = clean.toLowerCase();
