@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { RefreshCw, Search, X, Code2, Plus } from 'lucide-react';
+import { RefreshCw, Search, X, Code2, Plus, Bookmark } from 'lucide-react';
 import { NavTab } from './MobileBottomNav';
 
 interface NavbarProps {
@@ -104,14 +104,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             
 
-            {/* Green Plus Action Button */}
+            {/* Saved / Applied Applications Quick Access Button */}
             <button
-              onClick={() => onTabChange?.('notes')}
+              onClick={() => onTabChange?.('applied')}
               className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#22c55e] hover:bg-[#16a34a] text-black font-bold flex items-center justify-center transition-colors cursor-pointer shadow-xs"
-              title="Add Note"
-              aria-label="Add new"
+              title="My Applications"
+              aria-label="My Applications"
             >
-              <Plus className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+              <Bookmark className="w-4 h-4 stroke-[2.2] fill-black/20" />
             </button>
           </div>
         </div>

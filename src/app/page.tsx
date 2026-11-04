@@ -9,6 +9,8 @@ import { DashboardMetrics } from '@/components/DashboardMetrics';
 import { UpcomingActivities } from '@/components/UpcomingActivities';
 import { AnalyticsView } from '@/components/AnalyticsView';
 import { NotesSection } from '@/components/NotesSection';
+import { AppliedView } from '@/components/AppliedView';
+import { useSavedDrives } from '@/hooks/useSavedDrives';
 import {
   FilterBar,
   DateSortOption,
@@ -132,6 +134,7 @@ function parseSortDate(str?: string): number {
 
 export default function PlacementTrackerPage() {
   const [drives, setDrives] = useState<PlacementDrive[]>([]);
+  const { isSaved, toggleSave, getStage, updateStage } = useSavedDrives();
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -479,8 +482,15 @@ export default function PlacementTrackerPage() {
             />
           )}
 
-{/* 5. LIVE NOTES VIEW (Shared real-time notes board) */}
-          {activeTab === 'notes' && <NotesSection />}
+{/* 5. APPLIED / MY APPLICATIONS VIEW (Client-side localStorage saved drives) */}
+          {(activeTab === 'applied' || activeTab === 'notes') && (
+            <AppliedView
+              drives={drives}
+              onSelectCompany={(drive) => setSelectedDrive(drive)}
+              onNavigateHome={() => handleTabChange('dashboard')}
+              isPastDrive={isInterviewOver}
+            />
+          )}
 
           {/* PIPELINE / CARDS SECTION */}
           {(activeTab === 'dashboard' ||
@@ -565,6 +575,11 @@ export default function PlacementTrackerPage() {
                       key={drive.id}
                       drive={drive}
                       isPast={isInterviewOver(drive)}
+                      isSaved={isSaved(drive.id, drive.company)}
+                      onToggleSave={(d) => toggleSave(d.id, d.company)}
+                      savedStage={getStage(drive.id, drive.company)}
+                      onStageChange={(d, stage) => updateStage(d.id, stage, d.company)}
+                      showStageBadge={true}
                       onSelect={(d) => setSelectedDrive(d)}
                     />
                   ))}
@@ -573,6 +588,8 @@ export default function PlacementTrackerPage() {
                 <CompanyTable
                   drives={filteredDrives.slice(0, visibleCount)}
                   isPastDrive={isInterviewOver}
+                  isSaved={isSaved}
+                  onToggleSave={(d) => toggleSave(d.id, d.company)}
                   onSelect={(d) => setSelectedDrive(d)}
                 />
               )}
@@ -611,6 +628,8 @@ export default function PlacementTrackerPage() {
       {/* Company Dossier / Details Modal */}
       <CompanyDetailModal
         drive={selectedDrive}
+        isSaved={selectedDrive ? isSaved(selectedDrive.id, selectedDrive.company) : false}
+        onToggleSave={(d) => toggleSave(d.id, d.company)}
         onClose={() => setSelectedDrive(null)}
       />
 

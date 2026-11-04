@@ -2,15 +2,23 @@
 
 import React from 'react';
 import { PlacementDrive } from '@/lib/db';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Bookmark } from 'lucide-react';
 
 interface CompanyTableProps {
   drives: PlacementDrive[];
   onSelect?: (drive: PlacementDrive) => void;
   isPastDrive?: (drive: PlacementDrive) => boolean;
+  isSaved?: (driveId: string, company?: string) => boolean;
+  onToggleSave?: (drive: PlacementDrive) => void;
 }
 
-export const CompanyTable: React.FC<CompanyTableProps> = ({ drives, onSelect, isPastDrive }) => {
+export const CompanyTable: React.FC<CompanyTableProps> = ({
+  drives,
+  onSelect,
+  isPastDrive,
+  isSaved,
+  onToggleSave,
+}) => {
   const getTierTag = (tier: string) => {
     const t = (tier || '').toLowerCase();
     if (t.includes('super dream')) return 'border-amber-500/40 text-amber-400 bg-amber-950/10';
@@ -128,10 +136,34 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({ drives, onSelect, is
 
                   {/* Action */}
                   <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
-                    <span className="inline-flex items-center gap-1 text-[11px] text-[#546b80] group-hover:text-[#00ff66] transition-colors">
-                      <span>VIEW</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </span>
+                    <div className="flex items-center justify-end gap-2">
+                      {onToggleSave && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleSave(drive);
+                          }}
+                          className={`p-1 rounded-lg border transition-all cursor-pointer ${
+                            isSaved?.(drive.id, drive.company)
+                              ? 'bg-emerald-500/15 border-emerald-500/40 text-[#22c55e]'
+                              : 'border-[#1b2737] text-[#70879d] hover:text-white'
+                          }`}
+                          title={isSaved?.(drive.id, drive.company) ? 'Saved' : 'Mark as Applied'}
+                          aria-label={isSaved?.(drive.id, drive.company) ? 'Saved' : 'Mark as Applied'}
+                        >
+                          <Bookmark
+                            className={`w-3 h-3 ${
+                              isSaved?.(drive.id, drive.company) ? 'fill-emerald-400 text-emerald-400' : ''
+                            }`}
+                          />
+                        </button>
+                      )}
+                      <span className="inline-flex items-center gap-1 text-[11px] text-[#546b80] group-hover:text-[#00ff66] transition-colors">
+                        <span>VIEW</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
                   </td>
                 </tr>
               );

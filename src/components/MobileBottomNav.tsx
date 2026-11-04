@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Home, History, StickyNote, BarChart2 } from 'lucide-react';
+import { Home, History, Bookmark, BarChart2 } from 'lucide-react';
 
 export type NavTab =
   | 'dashboard'
   | 'pipeline'
   | 'applications'
   | 'interviews'
+  | 'applied'
   | 'notes'
   | 'analytics'
   | 'past';
@@ -23,7 +24,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
 }) => {
   const isHome = activeTab === 'dashboard' || activeTab === 'pipeline';
   const isPast = activeTab === 'past';
-  const isNotes = activeTab === 'notes';
+  const isApplied = activeTab === 'applied' || activeTab === 'notes';
   const isStats = activeTab === 'analytics';
 
   return (
@@ -66,22 +67,22 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         )}
       </button>
 
-      {/* 3. NOTES */}
+      {/* 3. APPLIED / MY LIST */}
       <button
-        onClick={() => onTabChange('notes')}
+        onClick={() => onTabChange('applied')}
         className="flex flex-col items-center justify-center py-1 px-3 transition-colors relative min-w-[58px] cursor-pointer"
       >
-        <StickyNote
-          className={`w-5 h-5 ${isNotes ? 'text-[#22c55e]' : 'text-slate-400'}`}
+        <Bookmark
+          className={`w-5 h-5 ${isApplied ? 'text-[#22c55e] fill-emerald-500/20' : 'text-slate-400'}`}
         />
         <span
           className={`text-[11px] font-medium mt-1 transition-colors ${
-            isNotes ? 'text-white font-semibold' : 'text-[#70879d]'
+            isApplied ? 'text-white font-semibold' : 'text-[#70879d]'
           }`}
         >
-          Notes
+          Applied
         </span>
-        {isNotes && (
+        {isApplied && (
           <div className="w-6 h-0.5 bg-[#22c55e] rounded-full mt-1" />
         )}
       </button>

@@ -2,15 +2,22 @@
 
 import React, { useEffect } from 'react';
 import { PlacementDrive } from '@/lib/db';
-import { X, Calendar, GraduationCap, Clock, Users, Building, ExternalLink } from 'lucide-react';
+import { X, Calendar, GraduationCap, Clock, Users, Building, ExternalLink, Bookmark } from 'lucide-react';
 import { CompanyLogo } from './CompanyLogo';
 
 interface CompanyDetailModalProps {
   drive: PlacementDrive | null;
   onClose: () => void;
+  isSaved?: boolean;
+  onToggleSave?: (drive: PlacementDrive) => void;
 }
 
-export const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({ drive, onClose }) => {
+export const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({
+  drive,
+  onClose,
+  isSaved = false,
+  onToggleSave,
+}) => {
   useEffect(() => {
     if (!drive) return;
     const originalOverflow = document.body.style.overflow;
@@ -68,14 +75,34 @@ export const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({ drive, o
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-1 rounded-xl border border-[#1b2737] hover:border-slate-500 bg-[#131d2a] text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0"
-            title="Close"
-            aria-label="Close modal"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {onToggleSave && (
+              <button
+                type="button"
+                onClick={() => onToggleSave(drive)}
+                className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
+                  isSaved
+                    ? 'bg-emerald-500/15 border-emerald-500/40 text-[#22c55e]'
+                    : 'bg-[#131d2a] hover:bg-[#1a2636] border-[#1b2737] text-[#70879d] hover:text-white'
+                }`}
+                title={isSaved ? 'Remove from Applied' : 'Mark as Applied'}
+                aria-label={isSaved ? 'Remove from Applied' : 'Mark as Applied'}
+              >
+                <Bookmark
+                  className={`w-4 h-4 ${isSaved ? 'fill-emerald-400 text-emerald-400' : ''}`}
+                />
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-xl border border-[#1b2737] hover:border-slate-500 bg-[#131d2a] text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0"
+              title="Close"
+              aria-label="Close modal"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Compensation & Stipend */}

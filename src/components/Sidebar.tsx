@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ChevronRight, Home, History, StickyNote, BarChart2, Briefcase, Clock, Users } from 'lucide-react';
+import { ChevronRight, Home, History, Bookmark, BarChart2, Briefcase, Clock, Users } from 'lucide-react';
 import { NavTab } from './MobileBottomNav';
 
 interface SidebarProps {
@@ -18,7 +18,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', label: 'Home', icon: Home },
   { id: 'past', label: 'Past Drives', icon: History },
-  { id: 'notes', label: 'Notes', icon: StickyNote },
+  { id: 'applied', label: 'Applied', icon: Bookmark },
   { id: 'analytics', label: 'Stats', icon: BarChart2 },
   { id: 'interviews', label: 'Interviews', icon: Clock },
   { id: 'applications', label: 'Applications', icon: Users },
