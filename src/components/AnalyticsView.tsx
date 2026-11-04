@@ -29,60 +29,6 @@ function getEffectiveCtc(drive: { ctc?: string; tier?: string }): number {
   return 0;
 }
 
-function isCseEligibleDrive(drive: { eligibleBranches?: string[] }): boolean {
-  const branches = drive.eligibleBranches || [];
-  if (branches.length === 0) return true;
-
-  const text = branches.join(' ').toLowerCase();
-
-  // 1. Explicit CS/CSE branch keywords
-  if (
-    /\b(cse|cs|comp\s*sci|computer\s*science|comp\s*science|csbs|csc|cne)\b/i.test(text) ||
-    text.includes('computer science') ||
-    text.includes('comp science') ||
-    text.includes('cs and allied') ||
-    text.includes('cs cluster') ||
-    text.includes('cs/it') ||
-    text.includes('it/cs') ||
-    text.includes('cse-') ||
-    text.includes('cs-')
-  ) {
-    return true;
-  }
-
-  // 2. Generic / Open to all branches or Superset
-  if (
-    text.includes('refer superset') ||
-    text.includes('check superset') ||
-    text.includes('all branches') ||
-    text.includes('all streams') ||
-    text.includes('all b.tech') ||
-    text.includes('any engineering stream') ||
-    text.includes('open to all') ||
-    text.includes('excluding civil')
-  ) {
-    return true;
-  }
-
-  // 3. Open degree/batch without branch restrictions
-  const hasRestrictedBranches = /\b(mech|mechanical|civil|ece|eee|eie|ete|aerospace|automobile|chemical|biotech|medical electronics|iem)\b/i.test(
-    text
-  );
-  if (
-    !hasRestrictedBranches &&
-    (text.includes('b.tech') ||
-      text.includes('b.e') ||
-      text.includes('candidates') ||
-      text.includes('graduating') ||
-      text.includes('class of') ||
-      text.includes('batch'))
-  ) {
-    return true;
-  }
-
-  return false;
-}
-
 function parsePlacedCount(str?: string): number {
   if (!str) return 0;
   let s = String(str).trim();
@@ -332,11 +278,6 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
     const maxCtc = ctcs.length > 0 ? Math.max(...ctcs) : 0;
     const avgCtc = ctcs.length > 0 ? ctcs.reduce((a, b) => a + b, 0) / ctcs.length : 0;
 
-    // CSE eligible average CTC
-    const cseDrives = drives.filter(isCseEligibleDrive);
-    const cseCtcs = cseDrives.map((d) => getEffectiveCtc(d)).filter((v) => v > 0);
-    const cseAvgCtc = cseCtcs.length > 0 ? cseCtcs.reduce((a, b) => a + b, 0) / cseCtcs.length : 0;
-
     const sorted = [...ctcs].sort((a, b) => a - b);
     let median = 0;
     if (sorted.length > 0) {
@@ -353,7 +294,6 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       total: drives.length,
       maxCtc: maxCtc > 0 ? `₹${maxCtc} LPA` : 'TBA',
       avgCtc: avgCtc > 0 ? `₹${avgCtc.toFixed(1)} LPA` : 'TBA',
-      cseAvgCtc: cseAvgCtc > 0 ? `₹${cseAvgCtc.toFixed(1)} LPA` : 'TBA',
       medianCtc: formatLpa(median),
     };
   }, [drives]);
@@ -409,7 +349,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       </div>
 
       {/* Top Key Metrics Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
         <div className="p-3.5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c]">
           <span className="text-[11px] text-[#70879d] font-medium block">
             Total Pipeline
@@ -437,17 +377,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           <span className="text-xl sm:text-2xl font-bold text-sky-400 block mt-0.5 font-mono">
             {stats.avgCtc}
           </span>
-          <span className="text-[10px] text-[#70879d] block mt-0.5">Overall Mean</span>
-        </div>
-
-        <div className="p-3.5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c]">
-          <span className="text-[11px] text-[#70879d] font-medium block">
-            CSE Avg CTC
-          </span>
-          <span className="text-xl sm:text-2xl font-bold text-cyan-400 block mt-0.5 font-mono">
-            {stats.cseAvgCtc}
-          </span>
-          <span className="text-[10px] text-[#70879d] block mt-0.5">CSE Eligible Drives</span>
+          <span className="text-[10px] text-[#70879d] block mt-0.5">Mean Package</span>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c]">
@@ -460,7 +390,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           <span className="text-[10px] text-[#70879d] block mt-0.5">50th Percentile</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c]">
+        <div className="col-span-2 sm:col-span-1 p-3.5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c]">
           <span className="text-[11px] text-[#70879d] font-medium block">
             Total Placed
           </span>
