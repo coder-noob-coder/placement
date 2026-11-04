@@ -31,6 +31,7 @@ function parsePlacedCount(str?: string): number {
 export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCtcFilter }) => {
   const [chartType, setChartType] = useState<'bar' | 'pie'>('bar');
   const [distributionMode, setDistributionMode] = useState<'students' | 'drives'>('students');
+  const [recruiterSortMode, setRecruiterSortMode] = useState<'offers' | 'ctc'>('offers');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Total placed students
@@ -187,35 +188,47 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
     return ranges;
   }, [drives, totalPlaced]);
 
-  // 3. Top Recruiters Leaderboard Data (Ranked by total offers made)
+  // 3. Top Recruiters Leaderboard Data (Ranked by offers or CTC)
   const topRecruiters = useMemo(() => {
-    const recruiterMap = new Map<string, { company: string; placedCount: number; ctc?: string }>();
+    const recruiterMap = new Map<
+      string,
+      { company: string; placedCount: number; ctc?: string; maxCtc: number }
+    >();
 
     for (const d of drives) {
       const count = parsePlacedCount(d.studentsPlaced);
       if (count > 0) {
         // Clean out role / drive tags like (IT+FT), (Summer Intern) etc.
         const baseName = d.company.replace(/\s*\([^)]*\).*/g, '').trim() || d.company.trim();
+        const ctcVal = parseCtcMax(d.ctc);
+
         if (!recruiterMap.has(baseName)) {
           recruiterMap.set(baseName, {
             company: baseName,
             placedCount: count,
             ctc: d.ctc && d.ctc !== 'Not Specified' && d.ctc !== 'Check Superset' ? d.ctc : undefined,
+            maxCtc: ctcVal,
           });
         } else {
           const existing = recruiterMap.get(baseName)!;
           existing.placedCount += count;
-          if (!existing.ctc && d.ctc && d.ctc !== 'Not Specified' && d.ctc !== 'Check Superset') {
-            existing.ctc = d.ctc;
+          if (ctcVal > existing.maxCtc) {
+            existing.maxCtc = ctcVal;
+            if (d.ctc && d.ctc !== 'Not Specified' && d.ctc !== 'Check Superset') {
+              existing.ctc = d.ctc;
+            }
           }
         }
       }
     }
 
-    return Array.from(recruiterMap.values())
-      .sort((a, b) => b.placedCount - a.placedCount)
-      .slice(0, 6);
-  }, [drives]);
+    const list = Array.from(recruiterMap.values());
+    if (recruiterSortMode === 'offers') {
+      return list.sort((a, b) => b.placedCount - a.placedCount).slice(0, 6);
+    } else {
+      return list.sort((a, b) => b.maxCtc - a.maxCtc || b.placedCount - a.placedCount).slice(0, 6);
+    }
+  }, [drives, recruiterSortMode]);
 
   // 4. Bracket Slices for Pie Chart
   const bracketData = useMemo(() => {
@@ -504,10 +517,10 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
         </div>
       )}
 
-      {/* Top Recruiters Leaderboard Card */}
+      {/* Top Recruiters Leaderboard Card with By Offers / By CTC Toggle */}
       <div className="p-4 sm:p-5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c] space-y-3">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-[#172332]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-[#172332]">
           <div>
             <div className="flex items-center gap-2">
               <Trophy className="w-4 h-4 text-amber-400" />
@@ -521,8 +534,36 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
               )}
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Ranked by total offers made
+              {recruiterSortMode === 'offers'
+                ? 'Ranked by total offers made'
+                : 'Ranked by highest CTC package offered'}
             </p>
+          </div>
+
+          {/* Segmented Pill Toggle: [By Offers] | [By CTC] */}
+          <div className="flex items-center p-0.5 rounded-xl bg-[#0c141f] border border-[#1b2737] text-xs self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => setRecruiterSortMode('offers')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                recruiterSortMode === 'offers'
+                  ? 'bg-[#22c55e] text-black font-semibold shadow-xs'
+                  : 'text-[#8fa0b2] hover:text-white'
+              }`}
+            >
+              By Offers
+            </button>
+            <button
+              type="button"
+              onClick={() => setRecruiterSortMode('ctc')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                recruiterSortMode === 'ctc'
+                  ? 'bg-[#22c55e] text-black font-semibold shadow-xs'
+                  : 'text-[#8fa0b2] hover:text-white'
+              }`}
+            >
+              By CTC
+            </button>
           </div>
         </div>
 
@@ -549,7 +590,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
                   key={recruiter.company}
                   className="py-3 flex items-center justify-between gap-3 group transition-colors"
                 >
-                  {/* Left: Rank Badge + Company Name + CTC */}
+                  {/* Left: Rank Badge + Company Name + Secondary Badge */}
                   <div className="flex items-center gap-3 min-w-0">
                     <span
                       className={`w-6 h-6 rounded-lg text-xs font-bold font-mono flex items-center justify-center shrink-0 ${rankBadgeClass}`}
@@ -562,18 +603,30 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
                         {recruiter.company}
                       </span>
 
-                      {recruiter.ctc && (
-                        <span className="text-[11px] text-slate-400 font-mono bg-[#0c141f] border border-[#1b2737] px-1.5 py-0.5 rounded-md shrink-0">
-                          {recruiter.ctc}
+                      {recruiterSortMode === 'offers' ? (
+                        recruiter.ctc && (
+                          <span className="text-[11px] text-slate-400 font-mono bg-[#0c141f] border border-[#1b2737] px-1.5 py-0.5 rounded-md shrink-0">
+                            {recruiter.ctc}
+                          </span>
+                        )
+                      ) : (
+                        <span className="text-[11px] text-emerald-400/90 font-mono bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md shrink-0">
+                          {recruiter.placedCount} placed
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Right: Placed Offer Count Pill */}
-                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono shrink-0">
-                    {recruiter.placedCount} placed
-                  </span>
+                  {/* Right: Primary Metric Pill */}
+                  {recruiterSortMode === 'offers' ? (
+                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono shrink-0">
+                      {recruiter.placedCount} placed
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-400/10 text-amber-400 border border-amber-400/20 font-mono shrink-0">
+                      {recruiter.ctc || 'TBA'}
+                    </span>
+                  )}
                 </div>
               );
             })}
