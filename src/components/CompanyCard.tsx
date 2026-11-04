@@ -136,9 +136,11 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
 
             {/* Badges: Tier 1/2, Past, and Application Stage */}
             <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-              <span className="border border-emerald-500/50 text-emerald-400 bg-emerald-950/20 text-[11px] px-2.5 py-0.5 rounded-full font-medium inline-flex items-center">
-                {drive.tier}
-              </span>
+              {drive.tier && drive.tier !== 'Not Specified' && (
+                <span className="border border-emerald-500/50 text-emerald-400 bg-emerald-950/20 text-[11px] px-2.5 py-0.5 rounded-full font-medium inline-flex items-center">
+                  {drive.tier}
+                </span>
+              )}
               {isPast && (
                 <span className="border border-[#223345] text-[#8fa0b2] bg-[#131e2b] text-[11px] px-2.5 py-0.5 rounded-full font-medium inline-flex items-center">
                   Past

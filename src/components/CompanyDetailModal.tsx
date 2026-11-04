@@ -60,9 +60,11 @@ export const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({
                 <h2 className="text-base sm:text-lg font-bold text-white truncate tracking-tight">
                   {drive.company}
                 </h2>
-                <span className="border border-emerald-500/50 text-emerald-400 bg-emerald-950/20 text-[10px] px-2 py-0.5 rounded-full font-medium shrink-0">
-                  {drive.tier}
-                </span>
+                {drive.tier && drive.tier !== 'Not Specified' && (
+                  <span className="border border-emerald-500/50 text-emerald-400 bg-emerald-950/20 text-[10px] px-2 py-0.5 rounded-full font-medium shrink-0">
+                    {drive.tier}
+                  </span>
+                )}
                 {drive.studentsPlaced ? (
                   <span className="border border-emerald-500/50 bg-emerald-950/30 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-medium shrink-0">
                     {drive.studentsPlaced} Placed

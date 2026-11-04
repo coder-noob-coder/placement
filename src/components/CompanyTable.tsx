@@ -78,7 +78,7 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({
                         drive.tier
                       )}`}
                     >
-                      {drive.tier}
+                      {drive.tier === 'Not Specified' ? '—' : drive.tier}
                     </span>
                   </td>
 

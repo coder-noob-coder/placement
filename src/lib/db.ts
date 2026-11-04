@@ -37,8 +37,11 @@ function parseBranches(raw: unknown): string[] {
     .filter(Boolean);
 }
 
-function normalizeTier(rawTier: unknown, rawCtc?: unknown): string {
+function normalizeTier(rawTier: unknown): string {
   const str = String(rawTier || '').trim().toLowerCase();
+  if (!str || str === 'not specified' || str === 'unspecified' || str === '-' || str === '—') {
+    return 'Not Specified';
+  }
   if (
     str === '1' ||
     str === 'tier 1' ||
@@ -61,15 +64,7 @@ function normalizeTier(rawTier: unknown, rawCtc?: unknown): string {
     return 'Tier 2';
   }
 
-  // If column shifted or contains text, classify by CTC:
-  // Standard rule: CTC >= 10 LPA is Tier 1, otherwise Tier 2
-  const ctcMatches = String(rawCtc || '').replace(/,/g, '').match(/(\d+(?:\.\d+)?)/g);
-  if (ctcMatches && ctcMatches.length > 0) {
-    const maxVal = Math.max(...ctcMatches.map(Number));
-    if (maxVal >= 10) return 'Tier 1';
-  }
-
-  return 'Tier 2';
+  return 'Not Specified';
 }
 
 function normalizeDate(rawDate: unknown): string {
@@ -160,7 +155,7 @@ function mapRawRowsToDrives(rows: any[]): PlacementDrive[] {
     .map((row: any, idx: number) => {
       const company = String(row.Company || row.company || '').trim();
       const role = String(row.Role || row.role || 'Job Profile').trim();
-      const tier = normalizeTier(row.Tier || row.tier, row.CTC || row.ctc);
+      const tier = normalizeTier(row.Tier || row.tier);
       const dateListed = normalizeDate(
         row['Date Listed'] || row.dateListed || row['Listed Date']
       );
