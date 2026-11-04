@@ -18,6 +18,17 @@ function parseCtcMax(str?: string): number {
   return Math.max(...matches.map(Number));
 }
 
+function getEffectiveCtc(drive: { ctc?: string; tier?: string }): number {
+  const parsed = parseCtcMax(drive.ctc);
+  if (parsed > 0) return parsed;
+
+  const t = (drive.tier || '').toLowerCase();
+  if (t.includes('1') || t.includes('<6') || t.includes('tier 1')) return 5;
+  if (t.includes('2') || t.includes('>6') || t.includes('tier 2')) return 8;
+
+  return 0;
+}
+
 function parsePlacedCount(str?: string): number {
   if (!str) return 0;
   let s = String(str).trim();
@@ -46,7 +57,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
 
   // 1. Range Brackets for Drives (5-10, 10-15, 15-20, 20-25, 25+)
   const rangeData = useMemo(() => {
-    const ctcs = drives.map((p) => ({ company: p.company, val: parseCtcMax(p.ctc) }));
+    const ctcs = drives.map((p) => ({ company: p.company, val: getEffectiveCtc(p) }));
     const total = drives.length || 1;
 
     const b5_10 = ctcs.filter((x) => x.val >= 5 && x.val < 10).length;
@@ -119,7 +130,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   const studentRangeData = useMemo(() => {
     const studentList = drives.map((d) => ({
       placed: parsePlacedCount(d.studentsPlaced),
-      ctc: parseCtcMax(d.ctc),
+      ctc: getEffectiveCtc(d),
     }));
 
     const safeTotal = totalPlaced || 1;
@@ -205,7 +216,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       if (count > 0) {
         // Clean out role / drive tags like (IT+FT), (Summer Intern) etc.
         const baseName = d.company.replace(/\s*\([^)]*\).*/g, '').trim() || d.company.trim();
-        const ctcVal = parseCtcMax(d.ctc);
+        const ctcVal = getEffectiveCtc(d);
 
         if (!recruiterMap.has(baseName)) {
           recruiterMap.set(baseName, {
@@ -241,7 +252,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
 
   // 4. Bracket Slices for Pie Chart
   const bracketData = useMemo(() => {
-    const ctcs = drives.map((p) => parseCtcMax(p.ctc));
+    const ctcs = drives.map((p) => getEffectiveCtc(p));
     const total = drives.length || 1;
 
     const b5_10 = ctcs.filter((v) => v >= 5 && v < 10).length;
@@ -263,7 +274,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
 
   // 5. Summary Stats
   const stats = useMemo(() => {
-    const ctcs = drives.map((d) => parseCtcMax(d.ctc)).filter((v) => v > 0);
+    const ctcs = drives.map((d) => getEffectiveCtc(d)).filter((v) => v > 0);
     const maxCtc = ctcs.length > 0 ? Math.max(...ctcs) : 0;
     const avgCtc = ctcs.length > 0 ? ctcs.reduce((a, b) => a + b, 0) / ctcs.length : 0;
 
