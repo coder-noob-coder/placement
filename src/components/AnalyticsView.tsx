@@ -517,63 +517,59 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
         </div>
       )}
 
-      {/* Top Recruiters Leaderboard Card with By Offers / By CTC Toggle */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c] space-y-3">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-[#172332]">
-          <div>
+      {/* Top Recruiters Leaderboard Card with Uniform Text & Theme Styling */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c] space-y-4">
+        {/* Header - Styled identical to CTC Distribution Card */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-[#172332]">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <div className="flex items-center gap-2">
               <Trophy className="w-4 h-4 text-amber-400" />
-              <h3 className="text-sm font-semibold text-slate-100 tracking-wide">
+              <span className="text-xs sm:text-sm font-bold text-white tracking-wide">
                 Top Recruiters
-              </h3>
-              {topRecruiters.length > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
-                  Top {topRecruiters.length}
-                </span>
-              )}
+              </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              {recruiterSortMode === 'offers'
-                ? 'Ranked by total offers made'
-                : 'Ranked by highest CTC package offered'}
-            </p>
+
+            {/* Segmented Pill Toggle: [By Offers] | [By CTC] */}
+            <div className="flex items-center p-0.5 rounded-xl bg-[#0c141f] border border-[#1b2737] text-xs">
+              <button
+                type="button"
+                onClick={() => setRecruiterSortMode('offers')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                  recruiterSortMode === 'offers'
+                    ? 'bg-[#22c55e] text-black font-semibold shadow-xs'
+                    : 'text-[#8fa0b2] hover:text-white'
+                }`}
+              >
+                By Offers
+              </button>
+              <button
+                type="button"
+                onClick={() => setRecruiterSortMode('ctc')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                  recruiterSortMode === 'ctc'
+                    ? 'bg-[#22c55e] text-black font-semibold shadow-xs'
+                    : 'text-[#8fa0b2] hover:text-white'
+                }`}
+              >
+                By CTC
+              </button>
+            </div>
           </div>
 
-          {/* Segmented Pill Toggle: [By Offers] | [By CTC] */}
-          <div className="flex items-center p-0.5 rounded-xl bg-[#0c141f] border border-[#1b2737] text-xs self-start sm:self-auto">
-            <button
-              type="button"
-              onClick={() => setRecruiterSortMode('offers')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                recruiterSortMode === 'offers'
-                  ? 'bg-[#22c55e] text-black font-semibold shadow-xs'
-                  : 'text-[#8fa0b2] hover:text-white'
-              }`}
-            >
-              By Offers
-            </button>
-            <button
-              type="button"
-              onClick={() => setRecruiterSortMode('ctc')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                recruiterSortMode === 'ctc'
-                  ? 'bg-[#22c55e] text-black font-semibold shadow-xs'
-                  : 'text-[#8fa0b2] hover:text-white'
-              }`}
-            >
-              By CTC
-            </button>
-          </div>
+          <span className="text-xs text-[#70879d] font-mono">
+            {recruiterSortMode === 'offers'
+              ? 'Ranked by total offers'
+              : 'Ranked by highest CTC'}
+          </span>
         </div>
 
         {/* Rows */}
         {topRecruiters.length === 0 ? (
-          <div className="py-6 text-center text-xs text-slate-400">
+          <div className="py-6 text-center text-xs text-[#70879d]">
             Placement results will appear as drives conclude.
           </div>
         ) : (
-          <div className="divide-y divide-slate-800/60">
+          <div className="divide-y divide-[#172332] pt-1">
             {topRecruiters.map((recruiter, idx) => {
               // Highlight rank #1, #2, #3, muted for #4+
               const rankBadgeClass =
@@ -583,15 +579,15 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
                   ? 'bg-slate-300/15 text-slate-200 border border-slate-300/30'
                   : idx === 2
                   ? 'bg-amber-700/20 text-amber-300 border border-amber-700/30'
-                  : 'bg-[#0c141f] text-slate-400 border border-[#1b2737]';
+                  : 'bg-[#0c141f] text-[#70879d] border border-[#1b2737]';
 
               return (
                 <div
                   key={recruiter.company}
-                  className="py-3 flex items-center justify-between gap-3 group transition-colors"
+                  className="py-2.5 flex items-center justify-between gap-3 group transition-colors"
                 >
-                  {/* Left: Rank Badge + Company Name + Secondary Badge */}
-                  <div className="flex items-center gap-3 min-w-0">
+                  {/* Left: Rank Badge + Company Name + Secondary Metric */}
+                  <div className="flex items-center gap-2.5 min-w-0">
                     <span
                       className={`w-6 h-6 rounded-lg text-xs font-bold font-mono flex items-center justify-center shrink-0 ${rankBadgeClass}`}
                     >
@@ -599,18 +595,18 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
                     </span>
 
                     <div className="flex items-center gap-2 min-w-0 flex-wrap">
-                      <span className="font-medium text-slate-100 text-xs sm:text-sm truncate">
+                      <span className="font-semibold text-white group-hover:text-[#22c55e] text-xs sm:text-sm truncate transition-colors">
                         {recruiter.company}
                       </span>
 
                       {recruiterSortMode === 'offers' ? (
                         recruiter.ctc && (
-                          <span className="text-[11px] text-slate-400 font-mono bg-[#0c141f] border border-[#1b2737] px-1.5 py-0.5 rounded-md shrink-0">
+                          <span className="text-[11px] text-[#70879d] font-mono bg-[#0c141f] border border-[#1b2737] px-1.5 py-0.5 rounded-md shrink-0">
                             {recruiter.ctc}
                           </span>
                         )
                       ) : (
-                        <span className="text-[11px] text-emerald-400/90 font-mono bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-md shrink-0">
+                        <span className="text-[11px] text-[#22c55e] font-mono bg-[#22c55e]/10 border border-[#22c55e]/25 px-1.5 py-0.5 rounded-md shrink-0">
                           {recruiter.placedCount} placed
                         </span>
                       )}
@@ -619,11 +615,11 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
 
                   {/* Right: Primary Metric Pill */}
                   {recruiterSortMode === 'offers' ? (
-                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono shrink-0">
+                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/30 font-mono shrink-0">
                       {recruiter.placedCount} placed
                     </span>
                   ) : (
-                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-400/10 text-amber-400 border border-amber-400/20 font-mono shrink-0">
+                    <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-400/10 text-amber-400 border border-amber-400/30 font-mono shrink-0">
                       {recruiter.ctc || 'TBA'}
                     </span>
                   )}
