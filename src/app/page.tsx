@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { PlacementDrive } from '@/lib/db';
 import { Navbar } from '@/components/Navbar';
 import { Sidebar } from '@/components/Sidebar';
@@ -146,7 +146,48 @@ export default function PlacementTrackerPage() {
   const [sortByDate, setSortByDate] = useState<DateSortOption>('deadline-asc');
   const [showTodayOnly, setShowTodayOnly] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-  const [visibleCount, setVisibleCount] = useState(25);
+
+  // Per-tab visible items count in memory (so switching tabs preserves loaded pagination)
+  const [visibleCounts, setVisibleCounts] = useState<Record<string, number>>({});
+  const currentTabKey = activeTab === 'pipeline' ? 'dashboard' : activeTab;
+  const visibleCount = visibleCounts[currentTabKey] ?? 25;
+
+  // Scroll position memory per tab
+  const scrollPositionsRef = useRef<Record<string, number>>({});
+  const isRestoringScrollRef = useRef(false);
+
+  // Continuously track scroll position of the current tab
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!isRestoringScrollRef.current) {
+        scrollPositionsRef.current[currentTabKey] = window.scrollY;
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [currentTabKey]);
+
+  // Restore scroll position when active tab changes
+  useEffect(() => {
+    const targetY = scrollPositionsRef.current[currentTabKey] ?? 0;
+    isRestoringScrollRef.current = true;
+    const raf1 = requestAnimationFrame(() => {
+      const raf2 = requestAnimationFrame(() => {
+        window.scrollTo({ top: targetY, behavior: 'instant' });
+        setTimeout(() => {
+          isRestoringScrollRef.current = false;
+        }, 60);
+      });
+      return () => cancelAnimationFrame(raf2);
+    });
+    return () => cancelAnimationFrame(raf1);
+  }, [currentTabKey]);
+
+  const handleTabChange = useCallback((newTab: NavTab) => {
+    const fromKey = activeTab === 'pipeline' ? 'dashboard' : activeTab;
+    scrollPositionsRef.current[fromKey] = window.scrollY;
+    setActiveTab(newTab);
+  }, [activeTab]);
 
   // Selected company modal for detailed inspection
   const [selectedDrive, setSelectedDrive] = useState<PlacementDrive | null>(null);
@@ -329,10 +370,10 @@ export default function PlacementTrackerPage() {
     return list;
   }, [drives, search, selectedTier, ctcFilter, statusFilter, showTodayOnly, sortByDate, activeTab]);
 
-  // Reset visible items count when any filter or query changes
+  // Reset visible items count when any filter or query changes (not when switching tabs)
   useEffect(() => {
-    setVisibleCount(25);
-  }, [search, selectedTier, ctcFilter, statusFilter, showTodayOnly, sortByDate, activeTab]);
+    setVisibleCounts({});
+  }, [search, selectedTier, ctcFilter, statusFilter, showTodayOnly, sortByDate]);
 
   const handleResetFilters = () => {
     setSearch('');
@@ -341,10 +382,11 @@ export default function PlacementTrackerPage() {
     setStatusFilter('all');
     setSortByDate('deadline-asc');
     setShowTodayOnly(false);
-    setVisibleCount(25);
+    setVisibleCounts({});
   };
 
   const handleSelectMetric = (metric: 'all' | 'todayEvents' | 'tomorrow' | 'closing') => {
+    scrollPositionsRef.current[currentTabKey] = window.scrollY;
     if (metric === 'all') {
       setActiveTab('pipeline');
       setShowTodayOnly(false);
@@ -375,6 +417,7 @@ export default function PlacementTrackerPage() {
 
   // From analytics CTC threshold bar click: filter to that threshold and view pipeline
   const handleSelectCtcFromAnalytics = (minLpa: number) => {
+    scrollPositionsRef.current[currentTabKey] = window.scrollY;
     setCtcFilter(String(minLpa) as CtcFilterOption);
     setActiveTab('pipeline');
   };
@@ -388,13 +431,13 @@ export default function PlacementTrackerPage() {
         search={search}
         onSearchChange={setSearch}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
       />
 
       {/* Main Body: Desktop Sidebar + Content Area */}
       <div className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4 flex gap-3 lg:gap-5">
         {/* Desktop Left Sidebar */}
-        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
 
         {/* Main Content Area */}
         <main className="flex-1 min-w-0 space-y-3 sm:space-y-3.5 pb-20 md:pb-6">
@@ -540,7 +583,12 @@ export default function PlacementTrackerPage() {
                   {visibleCount < filteredDrives.length ? (
                     <button
                       type="button"
-                      onClick={() => setVisibleCount((prev) => prev + 20)}
+                      onClick={() =>
+                      setVisibleCounts((prev) => ({
+                        ...prev,
+                        [currentTabKey]: (prev[currentTabKey] ?? 25) + 20,
+                      }))
+                    }
                       className="w-full py-3 px-4 rounded-xl text-xs font-semibold font-mono text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 transition-colors flex items-center justify-center gap-2 mt-4 cursor-pointer"
                     >
                       <span>
@@ -569,7 +617,7 @@ export default function PlacementTrackerPage() {
       {/* Mobile Bottom Navigation Bar */}
       <MobileBottomNav
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
       />
     </div>
   );

@@ -139,7 +139,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
             <button
-              onClick={() => setIsMobileSearchOpen(false)}
+              onClick={() => {
+                onSearchChange?.('');
+                setIsMobileSearchOpen(false);
+              }}
               className="text-xs text-[#70879d] hover:text-white px-2 py-1 font-medium cursor-pointer"
             >
               Cancel
