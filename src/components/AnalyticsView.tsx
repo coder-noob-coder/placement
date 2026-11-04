@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { PlacementDrive } from '@/lib/db';
-import { BarChart3, PieChart as PieChartIcon, TrendingUp } from 'lucide-react';
+import { BarChart3, PieChart as PieChartIcon, TrendingUp, Trophy } from 'lucide-react';
 
 interface AnalyticsViewProps {
   drives: PlacementDrive[];
@@ -187,7 +187,37 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
     return ranges;
   }, [drives, totalPlaced]);
 
-  // 3. Bracket Slices for Pie Chart
+  // 3. Top Recruiters Leaderboard Data (Ranked by total offers made)
+  const topRecruiters = useMemo(() => {
+    const recruiterMap = new Map<string, { company: string; placedCount: number; ctc?: string }>();
+
+    for (const d of drives) {
+      const count = parsePlacedCount(d.studentsPlaced);
+      if (count > 0) {
+        // Clean out role / drive tags like (IT+FT), (Summer Intern) etc.
+        const baseName = d.company.replace(/\s*\([^)]*\).*/g, '').trim() || d.company.trim();
+        if (!recruiterMap.has(baseName)) {
+          recruiterMap.set(baseName, {
+            company: baseName,
+            placedCount: count,
+            ctc: d.ctc && d.ctc !== 'Not Specified' && d.ctc !== 'Check Superset' ? d.ctc : undefined,
+          });
+        } else {
+          const existing = recruiterMap.get(baseName)!;
+          existing.placedCount += count;
+          if (!existing.ctc && d.ctc && d.ctc !== 'Not Specified' && d.ctc !== 'Check Superset') {
+            existing.ctc = d.ctc;
+          }
+        }
+      }
+    }
+
+    return Array.from(recruiterMap.values())
+      .sort((a, b) => b.placedCount - a.placedCount)
+      .slice(0, 6);
+  }, [drives]);
+
+  // 4. Bracket Slices for Pie Chart
   const bracketData = useMemo(() => {
     const ctcs = drives.map((p) => parseCtcMax(p.ctc));
     const total = drives.length || 1;
@@ -209,7 +239,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
     ].filter((s) => s.count > 0);
   }, [drives]);
 
-  // 4. Summary Stats
+  // 5. Summary Stats
   const stats = useMemo(() => {
     const ctcs = drives.map((d) => parseCtcMax(d.ctc)).filter((v) => v > 0);
     const maxCtc = ctcs.length > 0 ? Math.max(...ctcs) : 0;
@@ -473,6 +503,83 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ drives, onSelectCt
           </div>
         </div>
       )}
+
+      {/* Top Recruiters Leaderboard Card */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-[#131d2a] border border-[#1e2c3c] space-y-3">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-3 border-b border-[#172332]">
+          <div>
+            <div className="flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-amber-400" />
+              <h3 className="text-sm font-semibold text-slate-100 tracking-wide">
+                Top Recruiters
+              </h3>
+              {topRecruiters.length > 0 && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                  Top {topRecruiters.length}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Ranked by total offers made
+            </p>
+          </div>
+        </div>
+
+        {/* Rows */}
+        {topRecruiters.length === 0 ? (
+          <div className="py-6 text-center text-xs text-slate-400">
+            Placement results will appear as drives conclude.
+          </div>
+        ) : (
+          <div className="divide-y divide-slate-800/60">
+            {topRecruiters.map((recruiter, idx) => {
+              // Highlight rank #1, #2, #3, muted for #4+
+              const rankBadgeClass =
+                idx === 0
+                  ? 'bg-amber-400/15 text-amber-400 border border-amber-400/30'
+                  : idx === 1
+                  ? 'bg-slate-300/15 text-slate-200 border border-slate-300/30'
+                  : idx === 2
+                  ? 'bg-amber-700/20 text-amber-300 border border-amber-700/30'
+                  : 'bg-[#0c141f] text-slate-400 border border-[#1b2737]';
+
+              return (
+                <div
+                  key={recruiter.company}
+                  className="py-3 flex items-center justify-between gap-3 group transition-colors"
+                >
+                  {/* Left: Rank Badge + Company Name + CTC */}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span
+                      className={`w-6 h-6 rounded-lg text-xs font-bold font-mono flex items-center justify-center shrink-0 ${rankBadgeClass}`}
+                    >
+                      #{idx + 1}
+                    </span>
+
+                    <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                      <span className="font-medium text-slate-100 text-xs sm:text-sm truncate">
+                        {recruiter.company}
+                      </span>
+
+                      {recruiter.ctc && (
+                        <span className="text-[11px] text-slate-400 font-mono bg-[#0c141f] border border-[#1b2737] px-1.5 py-0.5 rounded-md shrink-0">
+                          {recruiter.ctc}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right: Placed Offer Count Pill */}
+                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono shrink-0">
+                    {recruiter.placedCount} placed
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
