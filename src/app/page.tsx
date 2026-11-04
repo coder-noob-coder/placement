@@ -580,6 +580,8 @@ export default function PlacementTrackerPage() {
                       savedStage={getStage(drive.id, drive.company)}
                       onStageChange={(d, stage) => updateStage(d.id, stage, d.company)}
                       showStageBadge={true}
+                      isInterviewToday={isTodayDate(drive.interviewDate)}
+                      isOaToday={isTodayDate(drive.oaDate)}
                       onSelect={(d) => setSelectedDrive(d)}
                     />
                   ))}

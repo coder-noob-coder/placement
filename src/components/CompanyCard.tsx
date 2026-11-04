@@ -15,6 +15,8 @@ interface CompanyCardProps {
   savedStage?: ApplicationStage;
   onStageChange?: (drive: PlacementDrive, stage: ApplicationStage) => void;
   showStageBadge?: boolean;
+  isInterviewToday?: boolean;
+  isOaToday?: boolean;
 }
 
 function formatDateShort(str?: string): string {
@@ -85,6 +87,8 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
   savedStage,
   onStageChange,
   showStageBadge = false,
+  isInterviewToday = false,
+  isOaToday = false,
 }) => {
   const ctcInfo = formatCtc(drive.ctc);
   const formattedStipend = formatStipend(drive.stipend);
@@ -93,8 +97,29 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
     <div
       id={`drive-${drive.id}`}
       onClick={() => onSelect?.(drive)}
-      className="bg-[#0c141f] border border-[#1b2737] hover:border-[#2a3c50] rounded-2xl p-4 transition-all space-y-3 cursor-pointer group shadow-sm shadow-black/20 select-none relative"
+      className={`bg-[#0c141f] rounded-2xl p-4 transition-all space-y-3 cursor-pointer group select-none relative ${
+        isInterviewToday
+          ? 'border-2 border-rose-500/60 shadow-lg shadow-rose-950/30'
+          : isOaToday
+          ? 'border-2 border-amber-500/60 shadow-lg shadow-amber-950/30'
+          : 'border border-[#1b2737] hover:border-[#2a3c50] shadow-sm shadow-black/20'
+      }`}
     >
+      {/* Urgent Today's Event Pill Banner */}
+      {isInterviewToday ? (
+        <div className="flex items-center pb-0.5">
+          <span className="animate-pulse bg-rose-500/20 text-rose-400 border border-rose-500/40 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 font-mono shadow-xs">
+            🚨 Interview Today
+          </span>
+        </div>
+      ) : isOaToday ? (
+        <div className="flex items-center pb-0.5">
+          <span className="animate-pulse bg-amber-500/20 text-amber-400 border border-amber-500/40 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 font-mono shadow-xs">
+            ⚡ OA Assessment Today
+          </span>
+        </div>
+      ) : null}
+
       {/* Top Header: Logo + Company Info + Placed Status + Bookmark */}
       <div className="flex items-start justify-between gap-2.5">
         <div className="flex items-center gap-3 min-w-0 flex-1">
